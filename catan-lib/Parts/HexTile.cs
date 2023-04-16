@@ -23,10 +23,18 @@ namespace CatanLib.Parts
             }
         }
 
+        private IProductionCircle? production;
+        public IProductionCircle Production
+        {
+            get => production ?? throw new NullReferenceException("Property is still unset.");
+            set => production ??= value;
+        }
+
         public IEnumerable<float> ToVector()
         {
             IEnumerable<float> vector = Enumerable.Empty<float>();
             vector = vector.Concat(TerrainEncoding);
+            vector = vector.Concat(Production.ToVector());
             return vector;
         }
     }

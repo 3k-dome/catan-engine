@@ -6,5 +6,6 @@ namespace CatanLib.Interfaces
     {
         TerrainType Terrain { get; init; }
         float[] TerrainEncoding { get; }
+        IProductionCircle Production { get; set; }
     }
 }
