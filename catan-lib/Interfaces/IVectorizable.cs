@@ -3,5 +3,6 @@
     public interface IVectorizable
     {
         public IEnumerable<float> ToVector();
+        public IEnumerable<string> ToExplainedVector();
     }
 }

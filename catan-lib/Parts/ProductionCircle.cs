@@ -27,5 +27,10 @@ namespace CatanLib.Parts
         {
             return Encoding;
         }
+
+        public IEnumerable<string> ToExplainedVector()
+        {
+            return new string[] { "NormalizedDiceRoll", "OddsOfDiceRoll" };
+        }
     }
 }

@@ -37,5 +37,23 @@ namespace CatanLib.Parts
             vector = vector.Concat(Production.ToVector());
             return vector;
         }
+
+        public IEnumerable<string> ToExplainedVector()
+        {
+            IEnumerable<string> vector = Enumerable.Empty<string>();
+
+            // not backed by a lazy property since this is just a utility method
+            int index = 0;
+            string[] descriptions = new string[Enum.GetValues(typeof(TerrainType)).Length];
+            foreach (TerrainType terrainType in Enum.GetValues(typeof(TerrainType)))
+            {
+                descriptions[index] = $"TileIs{Enum.GetName(terrainType)}";
+                index++;
+            }
+
+            vector = vector.Concat(descriptions);
+            vector = vector.Concat(Production.ToExplainedVector());
+            return vector;
+        }
     }
 }
