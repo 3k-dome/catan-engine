@@ -3,9 +3,9 @@ using CatanLib.Interfaces;
 
 namespace CatanLib.Parts
 {
-    internal class HexTile : IHexTile, IVectorizable
+    public class HexTile : IHexTile
     {
-        public TerrainType Terrain { get; set; }
+        public TerrainType Terrain { get; init; }
 
         private float[]? terrainEncoding;
         public float[] TerrainEncoding

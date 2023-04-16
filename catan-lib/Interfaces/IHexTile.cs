@@ -2,9 +2,9 @@
 
 namespace CatanLib.Interfaces
 {
-    public interface IHexTile
+    public interface IHexTile : IVectorizable
     {
-        TerrainType Terrain { get; set; }
+        TerrainType Terrain { get; init; }
         float[] TerrainEncoding { get; }
     }
 }
