@@ -4,9 +4,9 @@ using CatanLib.Parts;
 
 namespace CatanLib.Sets
 {
-    public static class HexTileSet
+    public static class TerrainTileSet
     {
-        public static readonly IEnumerable<IHexTile> Tiles = new List<HexTile>()
+        public static readonly IEnumerable<ITerrainTile> Tiles = new List<TerrainTile>()
         {
             new() { Terrain = TerrainType.Desert },
 
