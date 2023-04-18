@@ -7,7 +7,6 @@
         Ore,
         Brick,
         Wood,
-        None
     }
 
     public static class TerrainResources

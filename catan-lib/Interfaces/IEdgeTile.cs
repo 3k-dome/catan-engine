@@ -2,9 +2,9 @@
 
 namespace CatanLib.Interfaces
 {
-    public interface IEdgeTile
+    public interface IEdgeTile : IHexTile
     {
         bool SeaTrade { get; }
-        ResourceType ResourceTrade { get; }
+        ResourceType? ResourceTrade { get; }
     }
 }
