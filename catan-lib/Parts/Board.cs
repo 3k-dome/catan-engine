@@ -1,5 +1,6 @@
 ﻿using CatanLib.Enums;
 using CatanLib.Interfaces;
+using CatanLib.Sets;
 
 namespace CatanLib.Parts
 {
@@ -7,8 +8,19 @@ namespace CatanLib.Parts
     {
         public Dictionary<(int, int, int), IHexTile> Tiles = new();
 
-        public void SetupBoard()
+        public void SetupBoard(int seed)
         {
+            Random random = new(seed);
+
+            // choose starting edge from tile and circle placement
+            var startDirection = Enum.GetValues<TerrainType>().OrderBy(_ => random.Next()).First();
+
+            // shuffle tiles and get circles in order
+            IOrderedEnumerable<ITerrainTile> terrainTiles = TerrainTileSet.Tiles.OrderBy(_ => random.Next());
+            IOrderedEnumerable<IProductionCircle> productionCircles = ProductionCircleSet.Circles.OrderBy(circle => circle.Order);
+
+
+
             IEnumerable<IHexCoordinate> hexCoordinates = Enumerable.Empty<IHexCoordinate>();
 
             IHexCoordinate center = new HexCoordinate(0, 0, 0);
