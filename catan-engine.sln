@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "catan-engine", "catan-engine\catan-engine.csproj", "{A889C767-266D-48AC-9188-F238896C116D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "catan-engine", "catan-engine\catan-engine.csproj", "{A889C767-266D-48AC-9188-F238896C116D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "catan-lib", "catan-lib\catan-lib.csproj", "{11F7606D-AB58-4066-88FF-AB23351A6AC5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "catan-lib", "catan-lib\catan-lib.csproj", "{11F7606D-AB58-4066-88FF-AB23351A6AC5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hexagon-lib", "hexagon-lib\hexagon-lib.csproj", "{62DAEBC8-9864-4916-956E-D2D7ABB2FC47}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +33,14 @@ Global
 		{11F7606D-AB58-4066-88FF-AB23351A6AC5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{11F7606D-AB58-4066-88FF-AB23351A6AC5}.Release|x64.ActiveCfg = Release|x64
 		{11F7606D-AB58-4066-88FF-AB23351A6AC5}.Release|x64.Build.0 = Release|x64
+		{62DAEBC8-9864-4916-956E-D2D7ABB2FC47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62DAEBC8-9864-4916-956E-D2D7ABB2FC47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62DAEBC8-9864-4916-956E-D2D7ABB2FC47}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{62DAEBC8-9864-4916-956E-D2D7ABB2FC47}.Debug|x64.Build.0 = Debug|Any CPU
+		{62DAEBC8-9864-4916-956E-D2D7ABB2FC47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62DAEBC8-9864-4916-956E-D2D7ABB2FC47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62DAEBC8-9864-4916-956E-D2D7ABB2FC47}.Release|x64.ActiveCfg = Release|Any CPU
+		{62DAEBC8-9864-4916-956E-D2D7ABB2FC47}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
