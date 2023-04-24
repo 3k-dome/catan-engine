@@ -1,5 +1,6 @@
 ﻿using CatanLib.Enums;
 using CatanLib.Interfaces;
+using HexagonLib;
 
 namespace CatanLib.Parts
 {
@@ -9,8 +10,8 @@ namespace CatanLib.Parts
 
         public ResourceType? ResourceTrade { get; init; }
 
-        private IHexCoordinate? coordinate;
-        public IHexCoordinate Coordinate
+        private TileCoordinate? coordinate;
+        public TileCoordinate Coordinate
         {
             get => coordinate ?? throw new NullReferenceException();
             set => coordinate ??= value;

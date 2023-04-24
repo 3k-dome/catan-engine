@@ -5,7 +5,7 @@ namespace CatanLib.Parts
     public class ProductionCircle : IProductionCircle
     {
         public char Order { get; init; }
-        public int Limit { get; init; }
+        public int Roll { get; init; }
         public float Odds { get; init; }
 
         private float[]? encoding;
@@ -18,7 +18,7 @@ namespace CatanLib.Parts
                     return encoding;
                 }
 
-                encoding = new float[] { (float)Limit / 18, (float)Odds / 36 };
+                encoding = new float[] { (float)Roll / 12, (float)Odds / 36 };
                 return encoding;
             }
         }

@@ -1,7 +1,9 @@
-﻿namespace CatanLib.Interfaces
+﻿using HexagonLib;
+
+namespace CatanLib.Interfaces
 {
     public interface IHexTile : IVectorizable
     {
-        IHexCoordinate Coordinate { get; }
+        TileCoordinate Coordinate { get; set; }
     }
 }
