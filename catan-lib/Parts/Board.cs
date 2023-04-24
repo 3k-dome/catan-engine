@@ -1,78 +1,129 @@
 ﻿using CatanLib.Enums;
 using CatanLib.Interfaces;
 using CatanLib.Sets;
+using HexagonLib;
+using HexagonLib.Enums;
+using HexagonLib.Utils;
 
 namespace CatanLib.Parts
 {
     public class Board
     {
-        public Dictionary<(int, int, int), IHexTile> Tiles = new();
+        public Dictionary<TileCoordinate, IHexTile> TileStore = new();
+        public Dictionary<VertexCoordinate, ISettlement> VertexStore = new();
+        public Dictionary<EdgeCoordinate, IRoad> EdgeStore = new();
 
-        public void SetupBoard(int seed)
+        public IDice Dice { get; init; }
+
+        private Board(IDice dice)
         {
-            Random random = new(seed);
-
-            // choose starting edge from tile and circle placement
-            var startDirection = Enum.GetValues<TerrainType>().OrderBy(_ => random.Next()).First();
-
-            // shuffle tiles and get circles in order
-            IOrderedEnumerable<ITerrainTile> terrainTiles = TerrainTileSet.Tiles.OrderBy(_ => random.Next());
-            IOrderedEnumerable<IProductionCircle> productionCircles = ProductionCircleSet.Circles.OrderBy(circle => circle.Order);
-
-
-
-            IEnumerable<IHexCoordinate> hexCoordinates = Enumerable.Empty<IHexCoordinate>();
-
-            IHexCoordinate center = new HexCoordinate(0, 0, 0);
-            hexCoordinates = hexCoordinates.Concat(new[] { center });
-            hexCoordinates = hexCoordinates.Concat(Circle(center, Direction.NorthWest, 1).Reverse());
-            hexCoordinates = hexCoordinates.Concat(Circle(center, Direction.NorthWest, 2).Reverse());
-            _ = hexCoordinates.Reverse();
+            Dice = dice;
         }
 
-        public IEnumerable<IHexCoordinate> Circle(IHexCoordinate center, Direction direction, int radius)
+        public static Board BoardFactory<TSettlement, TRoad>(IDice dice)
+        where TSettlement : ISettlement, new()
+        where TRoad : IRoad, new()
         {
-            // rings are created by walking starting from an edge coordinate
-            // * therefore a direction is chosen and scaled by the given radius
-            // * the direction is than added to our center coordinate to get the edge coordinate
-            IHexCoordinate offset = DirectionCoordinates.Coordinates[direction].Scale(radius);
-            IHexCoordinate edge = center.Add(offset);
-            List<IHexCoordinate> circle = new();
+            Board board = new(dice);
+            board.SetupBoard<TSettlement, TRoad>();
+            return board;
+        }
 
-            // the circularization direction is always offset by two from the edge direction
-            // * therefore the array is rolled to the edge direction
-            // * and than rolled again to be offset by two
-            Direction[] circularizationOrder = Enum.GetValues<Direction>();
-            circularizationOrder = Roll(circularizationOrder, (int)direction);
-            circularizationOrder = Roll(circularizationOrder, 2);
+        private void SetupBoard<TSettlement, TRoad>()
+        where TSettlement : ISettlement, new()
+        where TRoad : IRoad, new()
+        {
+            PlaceEdgeTiles(Dice.Random);
+            PlaceTerrainTiles(Dice.Random);
+            InitSettlementPlacement<TSettlement>();
+            InitRoadPlacement<TRoad>();
+        }
 
-            foreach (Direction next in circularizationOrder)
+        private void InitRoadPlacement<TRoad>() where TRoad : IRoad, new()
+        {
+            foreach (VertexCoordinate coordinateA in VertexStore.Select(pair => pair.Key))
             {
-                for (int i = 0; i < radius; i++)
+                foreach ((int X, int Y, int Z) offset in VertexNeighborCoordinates.Offsets[coordinateA.VertexType].Select(pair => pair.Value))
                 {
-                    circle.Add(edge);
-                    edge = edge.Add(DirectionCoordinates.Coordinates[next]);
+                    VertexCoordinate coordinateB = coordinateA.Add(offset);
+                    if (VertexStore.ContainsKey(coordinateB))
+                    {
+                        EdgeCoordinate edge = new(coordinateA, coordinateB);
+                        IRoad road = new TRoad() { Edge = edge };
+                        _ = EdgeStore.TryAdd(edge, road);
+                    }
                 }
             }
-
-            return circle;
         }
 
-        public static T[] Roll<T>(T[] array, int positions)
+        private void InitSettlementPlacement<TSettlement>() where TSettlement : ISettlement, new()
         {
-            if (positions >= array.Length)
+            foreach (ITerrainTile terrainTile in TileStore.Select(pair => pair.Value).OfType<ITerrainTile>())
             {
-                throw new ArgumentException(
-                    "This roll would rotate the entire array at least once."
-                    + " Only non-repeating rotations are currently possible."
-                );
+                foreach (VertexCoordinate coordinate in terrainTile.Coordinate.Vertices())
+                {
+                    ISettlement settlement = new TSettlement
+                    {
+                        Vertex = coordinate
+                    };
+                    _ = VertexStore.TryAdd(coordinate, settlement);
+                }
             }
+        }
+        private void PlaceTerrainTiles(Random random)
+        {
+            IEnumerable<TileCoordinate> terrainTileCoordinates = SetupTerrainTileCoordinates(random);
+            IEnumerator<IProductionCircle> circles = ProductionCircleSet.Circles.OrderBy(circle => circle.Order).GetEnumerator();
+            IOrderedEnumerable<ITerrainTile> terrainTiles = TerrainTileSet.Tiles.OrderBy(_ => random.Next());
+            foreach ((TileCoordinate coordinate, ITerrainTile tile) in terrainTileCoordinates.Zip(terrainTiles))
+            {
+                if (tile.Terrain != TerrainType.Desert)
+                {
+                    _ = circles.MoveNext();
+                    tile.Production = circles.Current;
+                }
+                else
+                {
+                    tile.Production = ProductionCircleSet.DesertCircle;
+                }
 
-            T[] result = new T[array.Length];
-            array[positions..].CopyTo(result, 0);
-            array[..positions].CopyTo(result, array.Length - positions);
-            return result;
+                tile.Coordinate = coordinate;
+                TileStore.Add(coordinate, tile);
+            }
         }
 
+        private static IEnumerable<TileCoordinate> SetupTerrainTileCoordinates(Random random)
+        {
+            TileNeighbor startDirection = Enum.GetValues<TileNeighbor>().OrderBy(_ => random.Next()).First();
+
+            IEnumerable<TileCoordinate> tileCoordinates = Enumerable.Empty<TileCoordinate>();
+            TileCoordinate center = new(0, 0, 0);
+
+            tileCoordinates = tileCoordinates.Concat(TileOperations.Circle(center, startDirection, 2));
+            tileCoordinates = tileCoordinates.Concat(TileOperations.Circle(center, startDirection, 1));
+            tileCoordinates = tileCoordinates.Concat(new[] { center });
+            return tileCoordinates;
+        }
+
+        private void PlaceEdgeTiles(Random random)
+        {
+            IEnumerable<TileCoordinate> edgeTileCoordinates = SetupEdgeTileCoordinates();
+            IEnumerable<IEdgeTile> edgeTiles = EdgeTileSet.Tiles.OrderBy(_ => random.Next()).SelectMany(set => set);
+            foreach ((TileCoordinate coordinate, IEdgeTile tile) in edgeTileCoordinates.Zip(edgeTiles))
+            {
+                tile.Coordinate = coordinate;
+                TileStore.Add(coordinate, tile);
+            }
+        }
+
+        private static IEnumerable<TileCoordinate> SetupEdgeTileCoordinates()
+        {
+            IEnumerable<TileCoordinate> borderCoordinates = TileOperations.Circle(new TileCoordinate(0, 0, 0), TileNeighbor.NorthWest, 3);
+            return borderCoordinates.Skip(1).Concat(borderCoordinates.Take(1)); ;
+        }
+
+        public IHexTile this[TileCoordinate tile] => TileStore[tile];
+        public ISettlement this[VertexCoordinate vertex] => VertexStore[vertex];
+        public IRoad this[EdgeCoordinate edge] => EdgeStore[edge];
     }
 }

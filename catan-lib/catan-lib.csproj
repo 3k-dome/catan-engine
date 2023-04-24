@@ -29,4 +29,8 @@
     <Optimize>True</Optimize>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\hexagon-lib\hexagon-lib.csproj" />
+  </ItemGroup>
+
 </Project>
