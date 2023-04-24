@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace HexagonLib.Abstractions
+﻿namespace HexagonLib.Abstractions
 {
     public interface IHexagonalCoordinate
     {
