@@ -1,6 +1,6 @@
 ﻿namespace CatanLib.Interfaces
 {
-    public interface IProductionCircle : IVectorizable
+    public interface IProductionCircle : IVectorizableComponent
     {
         char Order { get; init; }
         int Roll { get; init; }

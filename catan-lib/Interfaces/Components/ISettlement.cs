@@ -3,7 +3,7 @@ using HexagonLib;
 
 namespace CatanLib.Interfaces
 {
-    public interface ISettlement : IVectorizable
+    public interface ISettlement : IVectorizableComponent, IVectorizableActions, IActionPlay, IActionUpgrade
     {
         VertexCoordinate Vertex { get; set; }
         bool IsSettlement { get; }

@@ -2,7 +2,7 @@
 
 namespace CatanLib.Interfaces
 {
-    public interface IHexTile : IVectorizable
+    public interface IHexTile : IVectorizableComponent
     {
         TileCoordinate Coordinate { get; set; }
     }
