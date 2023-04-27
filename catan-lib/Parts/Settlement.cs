@@ -7,8 +7,7 @@ namespace CatanLib.Parts
     public class Settlement : ISettlement
     {
         private VertexCoordinate? vertex;
-        public VertexCoordinate Vertex
-        {
+        public VertexCoordinate Vertex {
             get => vertex ?? throw new NullReferenceException();
             set => vertex ??= value;
         }
@@ -18,6 +17,25 @@ namespace CatanLib.Parts
         public bool IsCity { get; private set; }
 
         public PlayerNumber? Belongs { get; private set; }
+
+        private readonly IEnumerable<ResourceType> costs = new[]
+        {
+            ResourceType.Wood,
+            ResourceType.Brick,
+            ResourceType.Wheat,
+            ResourceType.Sheep
+        };
+        public IEnumerable<ResourceType> Costs => costs;
+
+        private readonly IEnumerable<ResourceType> upgradeCosts = new[]
+        {
+            ResourceType.Wheat,
+            ResourceType.Wheat,
+            ResourceType.Ore,
+            ResourceType.Ore,
+            ResourceType.Ore
+        };
+        public IEnumerable<ResourceType> UpgradeCosts => upgradeCosts;
 
         public IEnumerable<float> ToVector()
         {
