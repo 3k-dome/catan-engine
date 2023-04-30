@@ -4,14 +4,14 @@ namespace CatanLib.Parts
 {
     public class Dice : IDice
     {
-        public Random Random { get; init; }
+        private readonly Random? random;
+        public Random Random
+        {
+            get => random ?? throw new NullReferenceException();
+            init => random = value;
+        }
 
         public int Rolled { get; private set; }
-
-        public Dice(int seed)
-        {
-            Random = new(seed);
-        }
 
         public int Roll()
         {
