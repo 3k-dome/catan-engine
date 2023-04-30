@@ -8,6 +8,6 @@ namespace CatanLib.Interfaces
         VertexCoordinate Vertex { get; set; }
         bool IsSettlement { get; }
         bool IsCity { get; }
-        PlayerNumber? Belongs { get; }
+        IPlayer? Belongs { get; }
     }
 }
