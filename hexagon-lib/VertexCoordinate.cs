@@ -30,5 +30,14 @@ namespace HexagonLib
         {
             return new(X + coordinate.X, Y + coordinate.Y, Z + coordinate.Z);
         }
+
+        public IEnumerable<VertexCoordinate> Neighbors()
+        {
+            IEnumerable<(int X, int Y, int Z)> offsets = VertexNeighborCoordinates.Offsets[VertexType].Select(pair => pair.Value);
+            foreach ((int X, int Y, int Z) offset in offsets)
+            {
+                yield return Add(offset);
+            }
+        }
     }
 }
