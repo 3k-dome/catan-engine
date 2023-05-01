@@ -1,5 +1,6 @@
 ﻿using CatanLib.Enums;
 using CatanLib.Interfaces;
+using CatanLib.Interfaces.Components;
 using HexagonLib;
 
 namespace CatanLib.Parts
@@ -7,59 +8,49 @@ namespace CatanLib.Parts
     public class Road : IRoad
     {
         private EdgeCoordinate? edge;
-        public EdgeCoordinate Edge {
+        public EdgeCoordinate Edge
+        {
             get => edge ?? throw new NullReferenceException();
             set => edge ??= value;
         }
 
         public bool IsRoad { get; private set; }
-        public PlayerNumber? Belongs { get; private set; }
+        public IPlayer? Belongs { get; private set; }
+        public IEnumerable<ResourceType> Costs { get; } = new[] { ResourceType.Wood, ResourceType.Brick };
 
-        private readonly IEnumerable<ResourceType> costs = new[] { ResourceType.Wood, ResourceType.Brick };
-        public IEnumerable<ResourceType> Costs => costs;
-
-        public IEnumerable<float> ToVector()
+        public void Play<TSettlement, TRoad, TDice>(Catan<TSettlement, TRoad, TDice> catan)
+        where TSettlement : ISettlement, new()
+        where TRoad : IRoad, new()
+        where TDice : IDice, new()
         {
-            float[] playerEncoding = new float[Enum.GetValues<PlayerNumber>().Length];
-            if (Belongs != null)
-            {
-                playerEncoding[(int)Belongs] = 1;
-            }
-
-            float[] buildingEncoding = new float[] { IsRoad ? 1 : 0 };
-            return Enumerable.Concat(playerEncoding, buildingEncoding);
+            catan.CurrentPlayer.UseResources(Costs);
+            Belongs = catan.CurrentPlayer;
+            IsRoad = true;
         }
 
-        public IEnumerable<string> ToExplainedVector()
+        public bool CanPlay<TSettlement, TRoad, TDice>(Catan<TSettlement, TRoad, TDice> catan)
+        where TSettlement : ISettlement, new()
+        where TRoad : IRoad, new()
+        where TDice : IDice, new()
         {
-            throw new NotImplementedException();
-        }
-
-        public void ActionPlace()
-        {
-            // this should; each game element that has actions
-            // should have access to the game itself, i.e. a container
-            // for the boad and players
-            // actions could then be performed from this container
-            throw new NotImplementedException();
-        }
-
-        public bool CanPlace()
-        {
-            // see action
-            // player needs enought resources & a spare road object
-            // no road was build here yet
-            throw new NotImplementedException();
+            bool hasOwner = Belongs != null;
+            bool hasResources = catan.CurrentPlayer.HasResources(Costs);
+            return !hasOwner && hasResources && !IsRoad;
         }
 
         public IEnumerable<Action> GetActions()
         {
-            return new Action[] { ActionPlace };
+            throw new NotImplementedException();
         }
 
         public IEnumerable<Func<bool>> CanExecuteActions()
         {
-            return new Func<bool>[] { CanPlace };
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<float> ToVector()
+        {
+            throw new NotImplementedException();
         }
     }
 }
