@@ -2,7 +2,7 @@
 
 namespace CatanLib.Interfaces
 {
-    public interface ITerrainTile : IHexTile
+    public interface ITerrainTile : IHexTile, IVectorizableComponent
     {
         TerrainType Terrain { get; }
         IProductionCircle Production { get; set; }

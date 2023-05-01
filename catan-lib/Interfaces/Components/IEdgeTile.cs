@@ -2,7 +2,7 @@
 
 namespace CatanLib.Interfaces
 {
-    public interface IEdgeTile : IHexTile
+    public interface IEdgeTile : IHexTile, IVectorizableComponent
     {
         bool SeaTrade { get; }
         ResourceType? ResourceTrade { get; }
