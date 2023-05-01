@@ -15,6 +15,20 @@
             (VertexA, VertexB) = (vertexA, vertexB);
         }
 
+        public IEnumerable<EdgeCoordinate> Neighbors()
+        {
+            VertexCoordinate[] vertices = new[] { VertexA, VertexB };
+            foreach ((VertexCoordinate current, VertexCoordinate other) in Enumerable.Zip(vertices, vertices.Reverse()))
+            {
+                IEnumerable<VertexCoordinate> outgoing = current.Neighbors().Where(vertex => !other.Equals(vertex));
+
+                foreach (VertexCoordinate vertex in outgoing)
+                {
+                    yield return new(current, vertex);
+                }
+            }
+        }
+
         public override bool Equals(object? other)
         {
             return other != null && other is EdgeCoordinate && GetHashCode() == other.GetHashCode();
