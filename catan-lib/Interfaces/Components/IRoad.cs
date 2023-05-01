@@ -1,14 +1,13 @@
 ﻿using CatanLib.Enums;
+using CatanLib.Interfaces.Components;
 using HexagonLib;
 
 namespace CatanLib.Interfaces
 {
-    public interface IRoad : IVectorizableComponent, IVectorizableActions, IActionPlay
+    public interface IRoad : IVectorizableComponent, IActionPlay
     {
         EdgeCoordinate Edge { get; set; }
         bool IsRoad { get; }
-        PlayerNumber? Belongs { get; }
-        void ActionPlace();
-        bool CanPlace();
+        IPlayer? Belongs { get; }
     }
 }

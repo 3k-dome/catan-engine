@@ -1,10 +1,19 @@
 ﻿using CatanLib.Enums;
+using CatanLib.Interfaces.Components;
+using CatanLib.Parts;
 
 namespace CatanLib.Interfaces;
-public interface IActionUpgrade
+public interface IActionUpgrade : IActionPlay
 {
     IEnumerable<ResourceType> UpgradeCosts { get; }
 
-    void Upgrade();
-    bool CanUpgrade();
+    void Upgrade<TSettlement, TRoad, TDice>(Catan<TSettlement, TRoad, TDice> catan)
+    where TSettlement : ISettlement, new()
+    where TRoad : IRoad, new()
+    where TDice : IDice, new();
+
+    bool CanUpgrade<TSettlement, TRoad, TDice>(Catan<TSettlement, TRoad, TDice> catan)
+    where TSettlement : ISettlement, new()
+    where TRoad : IRoad, new()
+    where TDice : IDice, new();
 }

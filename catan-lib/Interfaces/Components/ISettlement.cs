@@ -1,9 +1,8 @@
-﻿using CatanLib.Enums;
-using HexagonLib;
+﻿using HexagonLib;
 
-namespace CatanLib.Interfaces
+namespace CatanLib.Interfaces.Components
 {
-    public interface ISettlement : IVectorizableComponent, IVectorizableActions, IActionPlay, IActionUpgrade
+    public interface ISettlement : IVectorizableComponent, IActionUpgrade
     {
         VertexCoordinate Vertex { get; set; }
         bool IsSettlement { get; }
