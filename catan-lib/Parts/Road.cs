@@ -35,7 +35,31 @@ namespace CatanLib.Parts
         {
             bool hasOwner = Belongs != null;
             bool hasResources = catan.CurrentPlayer.HasResources(Costs);
-            return !hasOwner && hasResources && !IsRoad;
+
+            bool connectsToOwnSettlement = Edge
+               // at least one of the vertices of this road ...
+               .Vertices()
+
+               // ... musst be our own settlement or city
+               .Select(vertex => catan.Board[vertex])
+               .Any(settlement => (settlement.IsSettlement || settlement.IsCity) && settlement.Belongs == catan.CurrentPlayer);
+
+            bool connectsToOwnRoad = Edge
+                // at least one incomming road must be one our own
+                .Neighbors()
+                .Select(edge => catan.Board[edge])
+                .Where(road => road.IsRoad && Belongs == catan.CurrentPlayer)
+
+                // and the vertex of the incomming road that is shared with this road ...
+                .Select(road => road.Edge)
+                .Select(edge => Edge.Contains(edge.VertexA) ? edge.VertexA : edge.VertexB)
+                .Distinct()
+
+                // ... must either be our own settlement or no ones
+                .Select(vertex => catan.Board[vertex])
+                .Any(settlement => settlement.Belongs == catan.CurrentPlayer || settlement.Belongs == null);
+
+            return (connectsToOwnSettlement || connectsToOwnRoad) && !hasOwner && hasResources && !IsRoad;
         }
 
         public IEnumerable<Action> GetActions()
