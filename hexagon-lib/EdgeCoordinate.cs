@@ -29,6 +29,17 @@
             }
         }
 
+        public bool Contains(VertexCoordinate vertex)
+        {
+            return vertex == VertexA || vertex == VertexB;
+        }
+
+        public IEnumerable<VertexCoordinate> Vertices()
+        {
+            yield return VertexA;
+            yield return VertexB;
+        }
+
         public override bool Equals(object? other)
         {
             return other != null && other is EdgeCoordinate && GetHashCode() == other.GetHashCode();
