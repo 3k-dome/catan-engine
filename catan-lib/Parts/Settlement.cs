@@ -1,5 +1,4 @@
 ﻿using CatanLib.Enums;
-using CatanLib.Interfaces;
 using CatanLib.Interfaces.Components;
 using HexagonLib;
 
@@ -50,10 +49,16 @@ namespace CatanLib.Parts
         {
             bool hasOwner = Belongs != null;
             bool hasResources = catan.CurrentPlayer.HasResources(Costs);
-            bool placementRule = Vertex.Neighbors()
+
+            bool distanceRule = Vertex.Neighbors()
                 .Select(vertex => catan.Board[vertex])
                 .All(settlement => !settlement.IsSettlement && !settlement.IsCity);
-            return !hasOwner && hasResources && placementRule && !IsSettlement && !IsCity;
+
+            bool placementRule = Vertex.Edges()
+                .Select(edge => catan.Board[edge])
+                .Any(road => road.Belongs == catan.CurrentPlayer);
+
+            return !hasOwner && hasResources && distanceRule && placementRule;
         }
 
         public void Upgrade<TSettlement, TRoad, TDice>(Catan<TSettlement, TRoad, TDice> catan)
@@ -70,19 +75,29 @@ namespace CatanLib.Parts
         where TRoad : IRoad, new()
         where TDice : IDice, new()
         {
+            bool isUpgradable = IsSettlement && !IsCity;
             bool isOwner = Belongs == catan.CurrentPlayer;
             bool hasResources = catan.CurrentPlayer.HasResources(UpgradeCosts);
-            return hasResources && isOwner && IsSettlement && !IsCity;
+
+            return isUpgradable && isOwner && hasResources;
         }
 
-        public IEnumerable<Action> GetActions()
+        public IEnumerable<Action<Catan<TSettlement, TRoad, TDice>>> GetActions<TSettlement, TRoad, TDice>()
+        where TSettlement : ISettlement, new()
+        where TRoad : IRoad, new()
+        where TDice : IDice, new()
         {
-            throw new NotImplementedException();
+            yield return Play;
+            yield return Upgrade;
         }
 
-        public IEnumerable<Func<bool>> CanExecuteActions()
+        public IEnumerable<Func<Catan<TSettlement, TRoad, TDice>, bool>> CanExecuteActions<TSettlement, TRoad, TDice>()
+        where TSettlement : ISettlement, new()
+        where TRoad : IRoad, new()
+        where TDice : IDice, new()
         {
-            throw new NotImplementedException();
+            yield return CanPlay;
+            yield return CanUpgrade;
         }
 
         public IEnumerable<float> ToVector()
