@@ -1,5 +1,4 @@
 ﻿using CatanLib.Enums;
-using CatanLib.Interfaces;
 using CatanLib.Interfaces.Components;
 using HexagonLib;
 
@@ -57,14 +56,20 @@ namespace CatanLib.Parts
             return !hasOwner && hasResources && (connectsToOwnSettlement || anyValidIncommingRoad);
         }
 
-        public IEnumerable<Action> GetActions()
+        public IEnumerable<Action<Catan<TSettlement, TRoad, TDice>>> GetActions<TSettlement, TRoad, TDice>()
+        where TSettlement : ISettlement, new()
+        where TRoad : IRoad, new()
+        where TDice : IDice, new()
         {
-            throw new NotImplementedException();
+            yield return Play;
         }
 
-        public IEnumerable<Func<bool>> CanExecuteActions()
+        public IEnumerable<Func<Catan<TSettlement, TRoad, TDice>, bool>> CanExecuteActions<TSettlement, TRoad, TDice>()
+        where TSettlement : ISettlement, new()
+        where TRoad : IRoad, new()
+        where TDice : IDice, new()
         {
-            throw new NotImplementedException();
+            yield return CanPlay;
         }
 
         public IEnumerable<float> ToVector()
