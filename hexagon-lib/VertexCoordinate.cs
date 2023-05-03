@@ -39,5 +39,13 @@ namespace HexagonLib
                 yield return Add(offset);
             }
         }
+
+        public IEnumerable<EdgeCoordinate> Edges()
+        {
+            foreach (VertexCoordinate neighbor in Neighbors())
+            {
+                yield return new EdgeCoordinate(this, neighbor);
+            }
+        }
     }
 }
