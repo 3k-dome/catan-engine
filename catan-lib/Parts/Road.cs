@@ -1,6 +1,8 @@
 ﻿using CatanLib.Enums;
+using CatanLib.Helpers;
 using CatanLib.Interfaces.Components;
 using HexagonLib;
+using System.ComponentModel;
 
 namespace CatanLib.Parts
 {
@@ -77,9 +79,17 @@ namespace CatanLib.Parts
             yield return CanPlay;
         }
 
-        public IEnumerable<float> ToVector()
+        public IEnumerable<float> ToVector<TSettlement, TRoad, TDice>(Catan<TSettlement, TRoad, TDice> catan)
+        where TSettlement : ISettlement, new()
+        where TRoad : IRoad, new()
+        where TDice : IDice, new()
         {
-            throw new NotImplementedException();
+            IEnumerable<float> playerEndoding = PlayerEncoding.Encode(catan.CurrentPlayer, Belongs);
+
+            float[] stateEncoding = new float[1];
+            stateEncoding[0] = IsRoad ? 1 : 0;
+
+            return playerEndoding.Concat(stateEncoding);
         }
     }
 }
