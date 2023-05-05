@@ -2,7 +2,7 @@
 using CatanLib.Interfaces.Components;
 using CatanLib.Parts;
 
-namespace CatanLib.Interfaces;
+namespace CatanLib.Interfaces.Interaction;
 public interface IActionUpgrade : IActionPlay
 {
     IEnumerable<ResourceType> UpgradeCosts { get; }

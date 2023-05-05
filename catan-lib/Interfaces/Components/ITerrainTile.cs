@@ -1,6 +1,7 @@
 ﻿using CatanLib.Enums;
+using CatanLib.Interfaces.Interaction;
 
-namespace CatanLib.Interfaces
+namespace CatanLib.Interfaces.Components
 {
     public interface ITerrainTile : IHexTile, IVectorizableComponent
     {

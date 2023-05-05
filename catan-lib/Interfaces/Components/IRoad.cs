@@ -1,8 +1,7 @@
-﻿using CatanLib.Enums;
-using CatanLib.Interfaces.Components;
+﻿using CatanLib.Interfaces.Interaction;
 using HexagonLib;
 
-namespace CatanLib.Interfaces
+namespace CatanLib.Interfaces.Components
 {
     public interface IRoad : IVectorizableComponent, IActionPlay
     {

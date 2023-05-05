@@ -2,7 +2,6 @@
 using CatanLib.Helpers;
 using CatanLib.Interfaces.Components;
 using HexagonLib;
-using System.ComponentModel;
 
 namespace CatanLib.Parts
 {

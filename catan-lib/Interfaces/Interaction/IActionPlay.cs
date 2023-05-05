@@ -1,9 +1,8 @@
 ﻿using CatanLib.Enums;
 using CatanLib.Interfaces.Components;
 using CatanLib.Parts;
-using CatanLib.Sets;
 
-namespace CatanLib.Interfaces;
+namespace CatanLib.Interfaces.Interaction;
 public interface IActionPlay : IVectorizableActions
 {
     IEnumerable<ResourceType> Costs { get; }

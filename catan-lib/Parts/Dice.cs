@@ -1,4 +1,4 @@
-﻿using CatanLib.Interfaces;
+﻿using CatanLib.Interfaces.Components;
 
 namespace CatanLib.Parts
 {

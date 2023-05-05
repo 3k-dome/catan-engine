@@ -1,6 +1,6 @@
 ﻿using HexagonLib;
 
-namespace CatanLib.Interfaces
+namespace CatanLib.Interfaces.Components
 {
     public interface IHexTile
     {

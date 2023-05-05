@@ -1,5 +1,5 @@
 ﻿using CatanLib.Enums;
-using CatanLib.Interfaces;
+using CatanLib.Interfaces.Components;
 using CatanLib.Parts;
 
 namespace CatanLib.Sets

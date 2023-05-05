@@ -1,4 +1,6 @@
-﻿namespace CatanLib.Interfaces
+﻿using CatanLib.Interfaces.Interaction;
+
+namespace CatanLib.Interfaces.Components
 {
     public interface IProductionCircle : IVectorizableComponent
     {

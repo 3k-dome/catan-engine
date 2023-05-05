@@ -1,5 +1,5 @@
 ﻿using CatanLib.Enums;
-using CatanLib.Interfaces;
+using CatanLib.Interfaces.Components;
 using CatanLib.Sets;
 using HexagonLib;
 using HexagonLib.Enums;
@@ -70,6 +70,7 @@ namespace CatanLib.Parts
                 }
             }
         }
+
         private void PlaceTerrainTiles(Random random)
         {
             IEnumerable<TileCoordinate> terrainTileCoordinates = SetupTerrainTileCoordinates(random);

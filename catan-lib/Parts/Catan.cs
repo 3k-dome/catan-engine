@@ -1,5 +1,4 @@
 ﻿using CatanLib.Enums;
-using CatanLib.Interfaces;
 using CatanLib.Interfaces.Components;
 
 namespace CatanLib.Parts
@@ -9,21 +8,45 @@ namespace CatanLib.Parts
     where TRoad : IRoad, new()
     where TDice : IDice, new()
     {
-        public Board Board { get; private set; }
         public IDice Dice { get; private set; }
+        public Board Board { get; private set; }
         public IEnumerable<IPlayer> Players { get; private set; }
         public IPlayer CurrentPlayer => Players.First();
 
         public Catan(IEnumerable<IPlayer> players, int seed)
         {
-            Players = players;
             Dice = new TDice() { Random = new Random(seed) };
             Board = Board.BoardFactory<TSettlement, TRoad>(Dice);
+            Players = players.OrderBy(_ => Dice.RollTwice());
+
+            // assign player order, relevant for our encoding
+            foreach ((IPlayer player, PlayerNumber number) in Players.Zip(Enum.GetValues<PlayerNumber>()))
+            {
+                player.Number = number;
+            }
         }
 
         private void NextPlayer()
         {
             Players = Players.Skip(1).Concat(Players.Take(1));
+        }
+
+        private void CounterClockwise()
+        {
+            Players = Players.Reverse();
+        }
+
+        private void SettlementPhase()
+        {
+            //// only allow placement of one settlement
+
+            //Board.VertexStore.Select(entry => entry.Value)
+
+            //VertexCoordinate coordinate;
+
+            //// only allow placement of one road
+            //_ = Board.EdgeStore.Select(entry => entry.Key)
+            //    .Where(edge => edge.VertexA == coordinate || edge.VertexB == coordinate);
         }
 
         private void ResourceProductionPhase()
@@ -40,7 +63,7 @@ namespace CatanLib.Parts
             {
                 // find all settlements surrounding one of the matching tiles
                 IEnumerable<ISettlement> settlements = tile.Coordinate.Vertices()
-                    .Select(vertexCoordinate => Board.VertexStore[vertexCoordinate])
+                    .Select(vertexCoordinate => Board[vertexCoordinate])
                     .Where(settlement => settlement.IsSettlement || settlement.IsCity);
 
                 // add resouces to each settlement and city

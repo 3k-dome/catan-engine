@@ -1,4 +1,5 @@
-﻿using HexagonLib;
+﻿using CatanLib.Interfaces.Interaction;
+using HexagonLib;
 
 namespace CatanLib.Interfaces.Components
 {
