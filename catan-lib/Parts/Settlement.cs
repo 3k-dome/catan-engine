@@ -21,7 +21,8 @@ namespace CatanLib.Parts
             ResourceType.Wood,
             ResourceType.Brick,
             ResourceType.Wheat,
-            ResourceType.Sheep
+            ResourceType.Sheep,
+            ResourceType.Settlement,
         };
         public IEnumerable<ResourceType> UpgradeCosts { get; } = new[]
         {
@@ -29,7 +30,8 @@ namespace CatanLib.Parts
             ResourceType.Wheat,
             ResourceType.Ore,
             ResourceType.Ore,
-            ResourceType.Ore
+            ResourceType.Ore,
+            ResourceType.City,
         };
 
         public void Play<TSettlement, TRoad, TDice>(Catan<TSettlement, TRoad, TDice> catan)
@@ -66,6 +68,7 @@ namespace CatanLib.Parts
         where TRoad : IRoad, new()
         where TDice : IDice, new()
         {
+            catan.CurrentPlayer.GainResource(ResourceType.Settlement);
             catan.CurrentPlayer.UseResources(UpgradeCosts);
             (IsSettlement, IsCity) = (false, true);
         }

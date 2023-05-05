@@ -15,7 +15,12 @@ namespace CatanLib.Parts
 
         public bool IsRoad { get; private set; }
         public IPlayer? Belongs { get; private set; }
-        public IEnumerable<ResourceType> Costs { get; } = new[] { ResourceType.Wood, ResourceType.Brick };
+        public IEnumerable<ResourceType> Costs { get; } = new[]
+        {
+            ResourceType.Wood,
+            ResourceType.Brick,
+            ResourceType.Road,
+        };
 
         public void Play<TSettlement, TRoad, TDice>(Catan<TSettlement, TRoad, TDice> catan)
         where TSettlement : ISettlement, new()

@@ -7,6 +7,9 @@
         Ore,
         Brick,
         Wood,
+        Road,
+        Settlement,
+        City,
     }
 
     public static class TerrainResources
