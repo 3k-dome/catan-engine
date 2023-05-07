@@ -22,5 +22,11 @@
 |                |                      | allowsOre     | 1 if true, else 0 |
 |                |                      | allowsBrick   | 1 if true, else 0 |
 |                |                      | allowsWood    | 1 if true, else 0 |
+| _IPlayer (Current)_ | _Resources_     | #Sheep   | [0, 1] by #/19 |
+|                |                      | #Wheat   | [0, 1] by #/19 |
+|                |                      | #Ore     | [0, 1] by #/19 |
+|                |                      | #Brick   | [0, 1] by #/19 |
+|                |                      | #Wood    | [0, 1] by #/19 |
 
-* Might be unnecessary since a 0 for all other types should imply this is a desert. Without this the partial vector would also have the same shape as the actual resource encoding (i.e. how many resources of each type a player or the current player has).
+
+\*Might be unnecessary since a 0 for all other types should imply this is a desert. Without this the partial vector would also have the same shape as the actual resource encoding (i.e. how many resources of each type a player or the current player has).
