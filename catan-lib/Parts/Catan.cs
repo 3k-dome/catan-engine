@@ -1,4 +1,5 @@
 ﻿using CatanLib.Enums;
+using CatanLib.Helpers;
 using CatanLib.Interfaces.Components;
 
 namespace CatanLib.Parts
@@ -9,6 +10,7 @@ namespace CatanLib.Parts
     where TDice : IDice, new()
     {
         public IDice Dice { get; private set; }
+        public IBank Bank { get; private set; }
         public Board Board { get; private set; }
         public IEnumerable<IPlayer> Players { get; private set; }
         public IPlayer CurrentPlayer => Players.First();
@@ -16,6 +18,7 @@ namespace CatanLib.Parts
         public Catan(IEnumerable<IPlayer> players, int seed)
         {
             Dice = new TDice() { Random = new Random(seed) };
+            Bank = new Bank();
             Board = Board.BoardFactory<TSettlement, TRoad>(Dice);
             Players = players.OrderBy(_ => Dice.RollTwice());
 
@@ -38,49 +41,25 @@ namespace CatanLib.Parts
 
         private void SettlementPhase()
         {
-            //// only allow placement of one settlement
 
-            //Board.VertexStore.Select(entry => entry.Value)
-
-            //VertexCoordinate coordinate;
-
-            //// only allow placement of one road
-            //_ = Board.EdgeStore.Select(entry => entry.Key)
-            //    .Where(edge => edge.VertexA == coordinate || edge.VertexB == coordinate);
         }
 
         private void ResourceProductionPhase()
         {
-            int roll = Dice.RollTwice();
 
-            // find all tiles that match the roll
-            IEnumerable<ITerrainTile> tiles = Board.TileStore
-                 .Select(entry => entry.Value)
-                 .OfType<ITerrainTile>()
-                 .Where(tile => tile.Production.Roll == roll);
+            IEnumerable<ITerrainTile> producingTiles = ProductionPhase.GetProducingTiles(Board.TileStore, Dice.RollTwice());
+            IEnumerable<ResourceType> totalYield = ProductionPhase.GetTotalYield(Board.VertexStore, producingTiles);
 
-            foreach (ITerrainTile tile in tiles)
+            // all players gain resouces if the bank can provide the total yield
+            if (Bank.HasResources(totalYield))
             {
-                // find all settlements surrounding one of the matching tiles
-                IEnumerable<ISettlement> settlements = tile.Coordinate.Vertices()
-                    .Select(vertexCoordinate => Board[vertexCoordinate])
-                    .Where(settlement => settlement.IsSettlement || settlement.IsCity);
+                ProductionPhase.DistributeResources(Board.VertexStore, producingTiles, Bank);
+            }
 
-                // add resouces to each settlement and city
-                foreach (ISettlement settlement in settlements)
-                {
-                    if (settlement.IsSettlement)
-                    {
-                        settlement.Belongs?.GainResource(TerrainResources.Resources[tile.Terrain]);
-                        continue;
-                    }
-
-                    if (settlement.IsCity)
-                    {
-                        settlement.Belongs?.GainResources(new[] { TerrainResources.Resources[tile.Terrain], TerrainResources.Resources[tile.Terrain] });
-                        continue;
-                    }
-                }
+            // if only one player would gain resources he gains as much as possible
+            else if (ProductionPhase.GetPlayerCount(Board.VertexStore, producingTiles) == 1)
+            {
+                ProductionPhase.TryDistributeResources(Board.VertexStore, producingTiles, Bank);
             }
         }
 
