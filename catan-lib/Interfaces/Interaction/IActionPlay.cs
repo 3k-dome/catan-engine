@@ -2,10 +2,12 @@
 using CatanLib.Interfaces.Components;
 using CatanLib.Parts;
 
+
 namespace CatanLib.Interfaces.Interaction;
 public interface IActionPlay : IVectorizableActions
 {
-    IEnumerable<ResourceType> Costs { get; }
+    IEnumerable<ResourceType> ResourceCosts { get; }
+    PieceType RequiredPiece { get; }
 
     void Play<TSettlement, TRoad, TDice>(Catan<TSettlement, TRoad, TDice> catan)
     where TSettlement : ISettlement, new()

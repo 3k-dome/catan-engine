@@ -5,7 +5,8 @@ using CatanLib.Parts;
 namespace CatanLib.Interfaces.Interaction;
 public interface IActionUpgrade : IActionPlay
 {
-    IEnumerable<ResourceType> UpgradeCosts { get; }
+    IEnumerable<ResourceType> UpgradeResourceCosts { get; }
+    PieceType RequiredUpgradePiece { get; }
 
     void Upgrade<TSettlement, TRoad, TDice>(Catan<TSettlement, TRoad, TDice> catan)
     where TSettlement : ISettlement, new()
