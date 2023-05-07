@@ -37,6 +37,11 @@ namespace CatanLib.Interfaces.Interaction
             }
         }
 
+        bool HasResource(ResourceType resource)
+        {
+            return Resources[resource] > 0;
+        }
+
         bool HasResources(IEnumerable<ResourceType> resources)
         {
             return resources.GroupBy(resource => resource)
