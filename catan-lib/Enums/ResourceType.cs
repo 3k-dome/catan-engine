@@ -6,10 +6,7 @@
         Wheat,
         Ore,
         Brick,
-        Wood,
-        Road,
-        Settlement,
-        City,
+        Wood
     }
 
     public static class TerrainResources
