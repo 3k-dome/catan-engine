@@ -16,19 +16,21 @@ namespace CatanLib.Parts
 
         public bool IsRoad { get; private set; }
         public IPlayer? Belongs { get; private set; }
-        public IEnumerable<ResourceType> Costs { get; } = new[]
+        public IEnumerable<ResourceType> ResourceCosts { get; } = new[]
         {
             ResourceType.Wood,
             ResourceType.Brick,
-            ResourceType.Road,
         };
+
+        public PieceType RequiredPiece { get; } = PieceType.Road;
 
         public void Play<TSettlement, TRoad, TDice>(Catan<TSettlement, TRoad, TDice> catan)
         where TSettlement : ISettlement, new()
         where TRoad : IRoad, new()
         where TDice : IDice, new()
         {
-            catan.CurrentPlayer.UseResources(Costs);
+            catan.CurrentPlayer.UseResources(ResourceCosts);
+            catan.CurrentPlayer.PlacePiece(RequiredPiece);
             Belongs = catan.CurrentPlayer;
             IsRoad = true;
         }
@@ -39,7 +41,8 @@ namespace CatanLib.Parts
         where TDice : IDice, new()
         {
             bool hasOwner = Belongs != null;
-            bool hasResources = catan.CurrentPlayer.HasResources(Costs);
+            bool hasResources = catan.CurrentPlayer.HasResources(ResourceCosts);
+            bool hasPiece = catan.CurrentPlayer.HasPiece(RequiredPiece);
 
             bool connectsToOwnSettlement = Edge.Vertices()
                .Select(vertex => catan.Board[vertex])
@@ -59,7 +62,7 @@ namespace CatanLib.Parts
                 .Select(vertex => catan.Board[vertex])
                 .Any(settlement => settlement.Belongs == catan.CurrentPlayer || settlement.Belongs == null);
 
-            return !hasOwner && hasResources && (connectsToOwnSettlement || anyValidIncommingRoad);
+            return !hasOwner && hasResources && hasPiece && (connectsToOwnSettlement || anyValidIncommingRoad);
         }
 
         public IEnumerable<Action<Catan<TSettlement, TRoad, TDice>>> GetActions<TSettlement, TRoad, TDice>()
