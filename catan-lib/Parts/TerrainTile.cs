@@ -32,8 +32,11 @@ namespace CatanLib.Parts
                     return terrainEncoding;
                 }
 
-                terrainEncoding = new float[Enum.GetValues<TerrainType>().Length];
-                terrainEncoding[(int)Terrain] = 1;
+                terrainEncoding = new float[Enum.GetValues<TerrainType>().Length - 1];
+                if (Terrain != TerrainType.Desert)
+                {
+                    terrainEncoding[(int)Terrain] = 1;
+                }
                 return terrainEncoding;
             }
         }
