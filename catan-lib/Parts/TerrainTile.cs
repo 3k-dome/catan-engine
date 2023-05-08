@@ -41,28 +41,7 @@ namespace CatanLib.Parts
             }
         }
 
-        public IEnumerable<string> ToExplainedVector()
-        {
-            IEnumerable<string> vector = Enumerable.Empty<string>();
-
-            // not backed by a lazy property since this is just a utility method
-            int index = 0;
-            string[] descriptions = new string[Enum.GetValues<TerrainType>().Length];
-            foreach (TerrainType terrainType in Enum.GetValues<TerrainType>())
-            {
-                descriptions[index] = $"Is{Enum.GetName(terrainType)}";
-                index++;
-            }
-
-            vector = vector.Concat(descriptions);
-            vector = vector.Concat(Production.ToExplainedVector());
-            return vector;
-        }
-
-        public IEnumerable<float> ToVector<TSettlement, TRoad, TDice>(Catan<TSettlement, TRoad, TDice> catan)
-        where TSettlement : ISettlement, new()
-        where TRoad : IRoad, new()
-        where TDice : IDice, new()
+        public IEnumerable<float> ToVector(ICatan catan)
         {
             IEnumerable<float> vector = Enumerable.Empty<float>();
             vector = vector.Concat(TerrainEncoding);

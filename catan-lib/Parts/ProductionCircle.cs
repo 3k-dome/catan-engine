@@ -18,15 +18,12 @@ namespace CatanLib.Parts
                     return encoding;
                 }
 
-                encoding = new float[] { (float)Roll / 12, (float)Odds / 36 };
+                encoding = new float[] { Roll / 12f, Odds / 36f };
                 return encoding;
             }
         }
 
-        public IEnumerable<float> ToVector<TSettlement, TRoad, TDice>(Catan<TSettlement, TRoad, TDice> catan)
-            where TSettlement : ISettlement, new()
-            where TRoad : IRoad, new()
-            where TDice : IDice, new()
+        public IEnumerable<float> ToVector(ICatan catan)
         {
             return Encoding;
         }

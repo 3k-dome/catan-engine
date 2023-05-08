@@ -24,5 +24,10 @@ namespace CatanLib.Parts
             Rolled = Random.Next(1, 7) + Random.Next(1, 7);
             return Rolled;
         }
+
+        public IEnumerable<float> ToVector(ICatan catan)
+        {
+            yield return Rolled / 12f;
+        }
     }
 }

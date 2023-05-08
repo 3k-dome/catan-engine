@@ -132,10 +132,7 @@ namespace CatanLib.Parts
         public ISettlement this[VertexCoordinate vertex] => VertexStore[vertex];
         public IRoad this[EdgeCoordinate edge] => EdgeStore[edge];
 
-        public IEnumerable<float> ToVector<TSettlement, TRoad, TDice>(Catan<TSettlement, TRoad, TDice> catan)
-        where TSettlement : ISettlement, new()
-        where TRoad : IRoad, new()
-        where TDice : IDice, new()
+        public IEnumerable<float> ToVector(ICatan catan)
         {
             // tiles need to be always serialized in the same order each game, otherwise
             // we would simply serialize a rotated (see starting direction) state of the game
