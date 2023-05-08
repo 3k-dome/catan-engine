@@ -182,18 +182,12 @@ namespace CatanLib.Parts
             return terrainTileEncoding.Concat(edgeTileEncoding).Concat(vertexEncoding).Concat(edgeEncoding);
         }
 
-        public IEnumerable<Action<Catan<TSettlement, TRoad, TDice>>> GetActions<TSettlement, TRoad, TDice>()
-        where TSettlement : ISettlement, new()
-        where TRoad : IRoad, new()
-        where TDice : IDice, new()
+        public IEnumerable<Action<ICatan>> GetActions()
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Func<Catan<TSettlement, TRoad, TDice>, bool>> CanExecuteActions<TSettlement, TRoad, TDice>()
-        where TSettlement : ISettlement, new()
-        where TRoad : IRoad, new()
-        where TDice : IDice, new()
+        public IEnumerable<Func<ICatan, bool>> CanExecuteActions()
         {
             throw new NotImplementedException();
         }

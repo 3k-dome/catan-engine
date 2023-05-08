@@ -36,10 +36,7 @@ namespace CatanLib.Parts
         };
         public PieceType RequiredUpgradePiece { get; } = PieceType.City;
 
-        public void Play<TSettlement, TRoad, TDice>(Catan<TSettlement, TRoad, TDice> catan)
-        where TSettlement : ISettlement, new()
-        where TRoad : IRoad, new()
-        where TDice : IDice, new()
+        public void Play(ICatan catan)
         {
             catan.CurrentPlayer.UseResources(ResourceCosts);
             catan.CurrentPlayer.PlacePiece(RequiredPiece);
@@ -47,10 +44,7 @@ namespace CatanLib.Parts
             (IsSettlement, IsCity) = (true, false);
         }
 
-        public bool CanPlay<TSettlement, TRoad, TDice>(Catan<TSettlement, TRoad, TDice> catan)
-        where TSettlement : ISettlement, new()
-        where TRoad : IRoad, new()
-        where TDice : IDice, new()
+        public bool CanPlay(ICatan catan)
         {
             bool hasOwner = Belongs != null;
             bool hasResources = catan.CurrentPlayer.HasResources(ResourceCosts);
@@ -67,10 +61,7 @@ namespace CatanLib.Parts
             return !hasOwner && hasResources && hasPiece && distanceRule && placementRule;
         }
 
-        public void Upgrade<TSettlement, TRoad, TDice>(Catan<TSettlement, TRoad, TDice> catan)
-        where TSettlement : ISettlement, new()
-        where TRoad : IRoad, new()
-        where TDice : IDice, new()
+        public void Upgrade(ICatan catan)
         {
             catan.CurrentPlayer.UseResources(UpgradeResourceCosts);
             catan.CurrentPlayer.TakePiece(RequiredPiece);
@@ -78,10 +69,7 @@ namespace CatanLib.Parts
             (IsSettlement, IsCity) = (false, true);
         }
 
-        public bool CanUpgrade<TSettlement, TRoad, TDice>(Catan<TSettlement, TRoad, TDice> catan)
-        where TSettlement : ISettlement, new()
-        where TRoad : IRoad, new()
-        where TDice : IDice, new()
+        public bool CanUpgrade(ICatan catan)
         {
             bool isUpgradable = IsSettlement && !IsCity;
             bool isOwner = Belongs == catan.CurrentPlayer;
@@ -91,19 +79,13 @@ namespace CatanLib.Parts
             return isUpgradable && isOwner && hasResources && hasPiece;
         }
 
-        public IEnumerable<Action<Catan<TSettlement, TRoad, TDice>>> GetActions<TSettlement, TRoad, TDice>()
-        where TSettlement : ISettlement, new()
-        where TRoad : IRoad, new()
-        where TDice : IDice, new()
+        public IEnumerable<Action<ICatan>> GetActions()
         {
             yield return Play;
             yield return Upgrade;
         }
 
-        public IEnumerable<Func<Catan<TSettlement, TRoad, TDice>, bool>> CanExecuteActions<TSettlement, TRoad, TDice>()
-        where TSettlement : ISettlement, new()
-        where TRoad : IRoad, new()
-        where TDice : IDice, new()
+        public IEnumerable<Func<ICatan, bool>> CanExecuteActions()
         {
             yield return CanPlay;
             yield return CanUpgrade;

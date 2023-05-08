@@ -24,10 +24,7 @@ namespace CatanLib.Parts
 
         public PieceType RequiredPiece { get; } = PieceType.Road;
 
-        public void Play<TSettlement, TRoad, TDice>(Catan<TSettlement, TRoad, TDice> catan)
-        where TSettlement : ISettlement, new()
-        where TRoad : IRoad, new()
-        where TDice : IDice, new()
+        public void Play(ICatan catan)
         {
             catan.CurrentPlayer.UseResources(ResourceCosts);
             catan.CurrentPlayer.PlacePiece(RequiredPiece);
@@ -35,10 +32,7 @@ namespace CatanLib.Parts
             IsRoad = true;
         }
 
-        public bool CanPlay<TSettlement, TRoad, TDice>(Catan<TSettlement, TRoad, TDice> catan)
-        where TSettlement : ISettlement, new()
-        where TRoad : IRoad, new()
-        where TDice : IDice, new()
+        public bool CanPlay(ICatan catan)
         {
             bool hasOwner = Belongs != null;
             bool hasResources = catan.CurrentPlayer.HasResources(ResourceCosts);
@@ -65,18 +59,12 @@ namespace CatanLib.Parts
             return !hasOwner && hasResources && hasPiece && (connectsToOwnSettlement || anyValidIncommingRoad);
         }
 
-        public IEnumerable<Action<Catan<TSettlement, TRoad, TDice>>> GetActions<TSettlement, TRoad, TDice>()
-        where TSettlement : ISettlement, new()
-        where TRoad : IRoad, new()
-        where TDice : IDice, new()
+        public IEnumerable<Action<ICatan>> GetActions()
         {
             yield return Play;
         }
 
-        public IEnumerable<Func<Catan<TSettlement, TRoad, TDice>, bool>> CanExecuteActions<TSettlement, TRoad, TDice>()
-        where TSettlement : ISettlement, new()
-        where TRoad : IRoad, new()
-        where TDice : IDice, new()
+        public IEnumerable<Func<ICatan, bool>> CanExecuteActions()
         {
             yield return CanPlay;
         }
