@@ -34,29 +34,32 @@ namespace CatanLib.Parts
 
         public bool CanPlay(ICatan catan)
         {
-            bool hasOwner = Belongs != null;
+            bool hasOwner = Belongs is not null;
             bool hasResources = catan.CurrentPlayer.HasResources(ResourceCosts);
             bool hasPiece = catan.CurrentPlayer.HasPiece(RequiredPiece);
 
+            if (hasOwner || !hasResources || !hasPiece) { return false; }
+
             bool connectsToOwnSettlement = Edge.Vertices()
                .Select(vertex => catan.Board[vertex])
-               .Any(settlement => (settlement.IsSettlement || settlement.IsCity) && settlement.Belongs == catan.CurrentPlayer);
+               .Any(settlement => settlement.Belongs is not null && settlement.Belongs.Number == catan.CurrentPlayer.Number);
 
-            IEnumerable<IRoad> incommingOwnRoads = Edge
-                .Neighbors()
+            if (connectsToOwnSettlement) { return true; }
+
+            IEnumerable<IRoad> incommingOwnRoads = Edge.Neighbors()
                 .Select(edge => catan.Board[edge])
-                .Where(road => road.IsRoad && Belongs == catan.CurrentPlayer);
+                .Where(road => road.Belongs is not null && road.Belongs.Number == catan.CurrentPlayer.Number);
 
-            IEnumerable<VertexCoordinate> sharedSettlements = incommingOwnRoads
+            IEnumerable<ISettlement> sharedSettlements = incommingOwnRoads
                 .Select(road => road.Edge)
                 .Select(edge => Edge.Contains(edge.VertexA) ? edge.VertexA : edge.VertexB)
-                .Distinct();
+                .Distinct()
+                .Select(vertex => catan.Board[vertex]);
 
             bool anyValidIncommingRoad = sharedSettlements
-                .Select(vertex => catan.Board[vertex])
-                .Any(settlement => settlement.Belongs == catan.CurrentPlayer || settlement.Belongs == null);
+                .Any(settlement => settlement.Belongs is null || settlement.Belongs.Number == catan.CurrentPlayer.Number);
 
-            return !hasOwner && hasResources && hasPiece && (connectsToOwnSettlement || anyValidIncommingRoad);
+            return anyValidIncommingRoad;
         }
 
         public IEnumerable<Action<ICatan>> GetActions()

@@ -46,19 +46,21 @@ namespace CatanLib.Parts
 
         public bool CanPlay(ICatan catan)
         {
-            bool hasOwner = Belongs != null;
+            bool hasOwner = Belongs is not null;
             bool hasResources = catan.CurrentPlayer.HasResources(ResourceCosts);
             bool hasPiece = catan.CurrentPlayer.HasPiece(RequiredPiece);
 
+            if (hasOwner || !hasResources || !hasPiece) { return false; }
+
             bool distanceRule = Vertex.Neighbors()
                 .Select(vertex => catan.Board[vertex])
-                .All(settlement => !settlement.IsSettlement && !settlement.IsCity);
+                .All(settlement => settlement.Belongs is null);
 
             bool placementRule = Vertex.Edges()
                 .Select(edge => catan.Board[edge])
-                .Any(road => road.Belongs == catan.CurrentPlayer);
+                .Any(road => road.Belongs is not null && road.Belongs.Number == catan.CurrentPlayer.Number);
 
-            return !hasOwner && hasResources && hasPiece && distanceRule && placementRule;
+            return distanceRule && placementRule;
         }
 
         public void Upgrade(ICatan catan)
@@ -72,7 +74,7 @@ namespace CatanLib.Parts
         public bool CanUpgrade(ICatan catan)
         {
             bool isUpgradable = IsSettlement && !IsCity;
-            bool isOwner = Belongs == catan.CurrentPlayer;
+            bool isOwner = Belongs is not null && Belongs.Number == catan.CurrentPlayer.Number;
             bool hasResources = catan.CurrentPlayer.HasResources(UpgradeResourceCosts);
             bool hasPiece = catan.CurrentPlayer.HasPiece(RequiredUpgradePiece);
 
