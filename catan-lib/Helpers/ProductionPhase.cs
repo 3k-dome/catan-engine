@@ -14,11 +14,11 @@ namespace CatanLib.Helpers
                 .Where(tile => tile.Production.Roll == roll);
         }
 
-        public static IEnumerable<ISettlement> GetSettlements(Dictionary<VertexCoordinate, ISettlement> vertexStore, ITerrainTile tile)
+        public static IEnumerable<ISettlement> GetPlacedSettlements(Dictionary<VertexCoordinate, ISettlement> vertexStore, ITerrainTile tile)
         {
             return tile.Coordinate.Vertices()
                 .Select(vertexCoordinate => vertexStore[vertexCoordinate])
-                .Where(settlement => settlement.IsSettlement || settlement.IsCity);
+                .Where(settlement => settlement.Belongs is not null);
         }
 
         public static IEnumerable<ResourceType> GetTotalYield(Dictionary<VertexCoordinate, ISettlement> vertexStore, IEnumerable<ITerrainTile> tiles)
@@ -28,7 +28,7 @@ namespace CatanLib.Helpers
             foreach (ITerrainTile tile in tiles)
             {
                 ResourceType resource = TerrainResources.Resources[tile.Terrain];
-                IEnumerable<ISettlement> settlements = GetSettlements(vertexStore, tile);
+                IEnumerable<ISettlement> settlements = GetPlacedSettlements(vertexStore, tile);
                 IEnumerable<ResourceType> tileProduction = settlements
                     .SelectMany(settlement => settlement.IsSettlement ? new[] { resource } : new[] { resource, resource });
 
@@ -43,7 +43,7 @@ namespace CatanLib.Helpers
             foreach (ITerrainTile tile in tiles)
             {
                 ResourceType resource = TerrainResources.Resources[tile.Terrain];
-                IEnumerable<ISettlement> settlements = GetSettlements(vertexStore, tile);
+                IEnumerable<ISettlement> settlements = GetPlacedSettlements(vertexStore, tile);
 
                 foreach (ISettlement settlement in settlements)
                 {
@@ -76,13 +76,11 @@ namespace CatanLib.Helpers
 
         public static int GetPlayerCount(Dictionary<VertexCoordinate, ISettlement> vertexStore, IEnumerable<ITerrainTile> tiles)
         {
-            return tiles.SelectMany(tile => tile.Coordinate.Vertices())
-                .Select(vertexCoordinate => vertexStore[vertexCoordinate])
-                .Where(settlement => settlement.IsSettlement || settlement.IsCity)
+            return tiles.SelectMany(tile => GetPlacedSettlements(vertexStore, tile))
                 .Select(settlement =>
                 {
-                    Debug.Assert(settlement.Belongs != null);
-                    return settlement.Belongs;
+                    Debug.Assert(settlement.Belongs is not null);
+                    return settlement.Belongs.Number;
                 })
                 .Distinct()
                 .Count();
@@ -93,7 +91,7 @@ namespace CatanLib.Helpers
             foreach (ITerrainTile tile in tiles)
             {
                 ResourceType resource = TerrainResources.Resources[tile.Terrain];
-                IEnumerable<ISettlement> settlements = GetSettlements(vertexStore, tile);
+                IEnumerable<ISettlement> settlements = GetPlacedSettlements(vertexStore, tile);
 
                 foreach (ISettlement settlement in settlements)
                 {
