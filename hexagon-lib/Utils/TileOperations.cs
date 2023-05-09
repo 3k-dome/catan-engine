@@ -25,5 +25,18 @@ namespace HexagonLib.Utils
 
             return circle;
         }
+
+        public static IEnumerable<TileCoordinate> Spiral(TileCoordinate center, TileNeighbor direction, int radius)
+        {
+            IEnumerable<TileCoordinate> tileCoordinates = Enumerable.Empty<TileCoordinate>();
+
+            for (int i = radius; i > 0; i--)
+            {
+                tileCoordinates = tileCoordinates.Concat(Circle(center, direction, i));
+            }
+            tileCoordinates = tileCoordinates.Concat(new[] { center });
+
+            return tileCoordinates;
+        }
     }
 }

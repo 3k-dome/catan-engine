@@ -1,4 +1,5 @@
 ﻿using CatanLib.Enums;
+using CatanLib.Helpers;
 using CatanLib.Interfaces.Components;
 using CatanLib.Interfaces.Interaction;
 using CatanLib.Sets;
@@ -10,71 +11,61 @@ namespace CatanLib.Parts
 {
     public class Board : IVectorizableComponent, IVectorizableActions
     {
+
         public Dictionary<TileCoordinate, IHexTile> TileStore = new();
+        public IHexTile this[TileCoordinate tile] => TileStore[tile];
+
+
         public Dictionary<VertexCoordinate, ISettlement> VertexStore = new();
+        public ISettlement this[VertexCoordinate vertex] => VertexStore[vertex];
+
+
         public Dictionary<EdgeCoordinate, IRoad> EdgeStore = new();
+        public IRoad this[EdgeCoordinate edge] => EdgeStore[edge];
 
-        public IDice Dice { get; init; }
 
-        private Board(IDice dice)
-        {
-            Dice = dice;
-        }
+        private Board() { }
 
-        public static Board BoardFactory<TSettlement, TRoad>(IDice dice)
+        public static Board BoardFactory<TSettlement, TRoad>(Random random)
         where TSettlement : ISettlement, new()
         where TRoad : IRoad, new()
         {
-            Board board = new(dice);
-            board.SetupBoard<TSettlement, TRoad>();
+            Board board = new();
+            board.SetupBoard<TSettlement, TRoad>(random);
             return board;
         }
 
-        private void SetupBoard<TSettlement, TRoad>()
+
+        private void SetupBoard<TSettlement, TRoad>(Random random)
         where TSettlement : ISettlement, new()
         where TRoad : IRoad, new()
         {
-            PlaceEdgeTiles(Dice.Random);
-            PlaceTerrainTiles(Dice.Random);
+            PlaceEdgeTiles(random);
+            PlaceTerrainTiles(random);
             InitSettlementPlacement<TSettlement>();
             InitRoadPlacement<TRoad>();
         }
 
-        private void InitRoadPlacement<TRoad>() where TRoad : IRoad, new()
+        private void PlaceEdgeTiles(Random random)
         {
-            foreach (VertexCoordinate coordinateA in VertexStore.Select(pair => pair.Key))
+            IEnumerable<TileCoordinate> edgeTileCoordinates = TraverseOrder.EdgeTileOrder.Value;
+            IEnumerable<IEdgeTile> edgeTiles = EdgeTileSet.Tiles.OrderBy(_ => random.Next()).SelectMany(set => set);
+            foreach ((TileCoordinate coordinate, IEdgeTile tile) in edgeTileCoordinates.Zip(edgeTiles))
             {
-                foreach ((int X, int Y, int Z) offset in VertexNeighborCoordinates.Offsets[coordinateA.VertexType].Select(pair => pair.Value))
-                {
-                    VertexCoordinate coordinateB = coordinateA.Add(offset);
-                    if (VertexStore.ContainsKey(coordinateB))
-                    {
-                        EdgeCoordinate edge = new(coordinateA, coordinateB);
-                        IRoad road = new TRoad() { Edge = edge };
-                        _ = EdgeStore.TryAdd(edge, road);
-                    }
-                }
+                tile.Coordinate = coordinate;
+                TileStore.Add(coordinate, tile);
             }
         }
 
-        private void InitSettlementPlacement<TSettlement>() where TSettlement : ISettlement, new()
+        private static IEnumerable<TileCoordinate> GetTerrainTilePlacementOrder(Random random)
         {
-            foreach (ITerrainTile terrainTile in TileStore.Select(pair => pair.Value).OfType<ITerrainTile>())
-            {
-                foreach (VertexCoordinate coordinate in terrainTile.Coordinate.Vertices())
-                {
-                    ISettlement settlement = new TSettlement
-                    {
-                        Vertex = coordinate
-                    };
-                    _ = VertexStore.TryAdd(coordinate, settlement);
-                }
-            }
+            TileNeighbor startDirection = Enum.GetValues<TileNeighbor>().OrderBy(_ => random.Next()).First();
+            return TileOperations.Spiral(new(0, 0, 0), startDirection, 2);
         }
 
         private void PlaceTerrainTiles(Random random)
         {
-            IEnumerable<TileCoordinate> terrainTileCoordinates = SetupTerrainTileCoordinates(random);
+            IEnumerable<TileCoordinate> terrainTileCoordinates = GetTerrainTilePlacementOrder(random);
             IEnumerator<IProductionCircle> circles = ProductionCircleSet.Circles.OrderBy(circle => circle.Order).GetEnumerator();
             IOrderedEnumerable<ITerrainTile> terrainTiles = TerrainTileSet.Tiles.OrderBy(_ => random.Next());
             foreach ((TileCoordinate coordinate, ITerrainTile tile) in terrainTileCoordinates.Zip(terrainTiles))
@@ -94,92 +85,40 @@ namespace CatanLib.Parts
             }
         }
 
-        private static IEnumerable<TileCoordinate> SetupTerrainTileCoordinates(Random random)
+        private void InitSettlementPlacement<TSettlement>() where TSettlement : ISettlement, new()
         {
-            TileNeighbor startDirection = Enum.GetValues<TileNeighbor>().OrderBy(_ => random.Next()).First();
-            return SetupTerrainTileCoordinates(startDirection);
-        }
-
-        private static IEnumerable<TileCoordinate> SetupTerrainTileCoordinates(TileNeighbor direction)
-        {
-            IEnumerable<TileCoordinate> tileCoordinates = Enumerable.Empty<TileCoordinate>();
-            TileCoordinate center = new(0, 0, 0);
-
-            tileCoordinates = tileCoordinates.Concat(TileOperations.Circle(center, direction, 2));
-            tileCoordinates = tileCoordinates.Concat(TileOperations.Circle(center, direction, 1));
-            tileCoordinates = tileCoordinates.Concat(new[] { center });
-            return tileCoordinates;
-        }
-
-        private void PlaceEdgeTiles(Random random)
-        {
-            IEnumerable<TileCoordinate> edgeTileCoordinates = SetupEdgeTileCoordinates();
-            IEnumerable<IEdgeTile> edgeTiles = EdgeTileSet.Tiles.OrderBy(_ => random.Next()).SelectMany(set => set);
-            foreach ((TileCoordinate coordinate, IEdgeTile tile) in edgeTileCoordinates.Zip(edgeTiles))
+            foreach (ITerrainTile terrainTile in TileStore.Select(entry => entry.Value).OfType<ITerrainTile>())
             {
-                tile.Coordinate = coordinate;
-                TileStore.Add(coordinate, tile);
+                foreach (VertexCoordinate coordinate in terrainTile.Coordinate.Vertices())
+                {
+                    ISettlement settlement = new TSettlement { Vertex = coordinate };
+                    _ = VertexStore.TryAdd(coordinate, settlement);
+                }
             }
         }
 
-        private static IEnumerable<TileCoordinate> SetupEdgeTileCoordinates()
+        private void InitRoadPlacement<TRoad>() where TRoad : IRoad, new()
         {
-            IEnumerable<TileCoordinate> borderCoordinates = TileOperations.Circle(new TileCoordinate(0, 0, 0), TileNeighbor.NorthWest, 3);
-            return borderCoordinates.Skip(1).Concat(borderCoordinates.Take(1)); ;
-        }
+            foreach (VertexCoordinate coordinateA in VertexStore.Select(entry => entry.Key))
+            {
+                foreach (VertexCoordinate coordinateB in coordinateA.Neighbors().Where(vertex => VertexStore.ContainsKey(vertex)))
+                {
+                    EdgeCoordinate edge = new(coordinateA, coordinateB);
+                    TRoad road = new() { Edge = edge };
+                    _ = EdgeStore.TryAdd(edge, road);
+                }
 
-        public IHexTile this[TileCoordinate tile] => TileStore[tile];
-        public ISettlement this[VertexCoordinate vertex] => VertexStore[vertex];
-        public IRoad this[EdgeCoordinate edge] => EdgeStore[edge];
+            }
+        }
 
         public IEnumerable<float> ToVector(ICatan catan)
         {
-            // tiles need to be always serialized in the same order each game, otherwise
-            // we would simply serialize a rotated (see starting direction) state of the game
+            IEnumerable<float> terrainTileEncoding = TraverseOrder.VectorizeBoardTerrain(TileStore, catan);
+            IEnumerable<float> edgeTileEncoding = TraverseOrder.VectorizeBoardEdge(TileStore, catan);
+            IEnumerable<float> settlementEncoding = TraverseOrder.VectorizeSettlements(VertexStore, catan);
+            IEnumerable<float> roadEncoding = TraverseOrder.VectorizeRoads(EdgeStore, catan);
 
-            // ensure that terrain is always serialized in the same order by creating
-            // a new coordinate spiral with a set direction, this should be cached
-            IEnumerable<TileCoordinate> terrainTileOrder = SetupTerrainTileCoordinates(TileNeighbor.NorthWest);
-            IEnumerable<float> terrainTileEncoding = terrainTileOrder.Select(coordinate => TileStore[coordinate])
-                .Select(tile => tile)
-                .OfType<ITerrainTile>()
-                .SelectMany(tile => tile.ToVector(catan));
-
-            // ensure that edge is always serialized in the same order, by reuseing
-            // the edge placement spiral to index the tilestore, this should be cached
-            IEnumerable<TileCoordinate> edgeTileOrder = SetupEdgeTileCoordinates();
-            IEnumerable<float> edgeTileEncoding = edgeTileOrder.Select(coordinate => TileStore[coordinate])
-                .Select(tile => tile)
-                .Cast<IEdgeTile>()
-                .SelectMany(tile => tile.ToVector(catan));
-
-            // ensure that all vertices are always serialized in the same order
-
-            // given that each tile is now ordered and the vertices of a tile are
-            // visited in a set order, we can simple traverse them and remove duplicates,
-            // this should be cached
-            IEnumerable<VertexCoordinate> vertexOrder = terrainTileOrder.Select(coordinate => TileStore[coordinate])
-                .Select(tile => tile)
-                .OfType<ITerrainTile>()
-                .SelectMany(tile => tile.Coordinate.Vertices())
-                .Distinct();
-            IEnumerable<float> vertexEncoding = vertexOrder.Select(vertex => VertexStore[vertex])
-                .SelectMany(settlement => settlement.ToVector(catan));
-
-
-            // ensure that all edges are always serialized in the same order
-
-            // by now all vertices are orderd therefore we can simply travers those
-            // and thier eges which are generated in a set order
-            // since this will produce all edges we need to exclude edges that lead into the see
-            IEnumerable<EdgeCoordinate> edgeOrder = vertexOrder.SelectMany(vertex => vertex.Edges())
-                .Where(edge => EdgeStore.ContainsKey(edge))
-                .Distinct();
-            IEnumerable<float> edgeEncoding = edgeOrder.Select(edge => EdgeStore[edge])
-                .SelectMany(road => road.ToVector(catan));
-
-
-            return terrainTileEncoding.Concat(edgeTileEncoding).Concat(vertexEncoding).Concat(edgeEncoding);
+            return terrainTileEncoding.Concat(edgeTileEncoding).Concat(settlementEncoding).Concat(roadEncoding);
         }
 
         public IEnumerable<Action<ICatan>> GetActions()
