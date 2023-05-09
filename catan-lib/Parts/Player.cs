@@ -1,11 +1,13 @@
 ﻿using CatanLib.Enums;
 using CatanLib.Interfaces.Components;
+using System.Drawing;
 
 namespace CatanLib.Parts
 {
     public class Player : IPlayer
     {
         public PlayerNumber Number { get; set; }
+        public int VictoryPoints { get; private set; } = 0;
 
         public Dictionary<ResourceType, int> Resources { get; } = new()
         {
@@ -36,7 +38,17 @@ namespace CatanLib.Parts
                 ? Enum.GetValues<ResourceType>().Select(resource => Resources[resource] / 19f)
                 : new float[] { Enum.GetValues<ResourceType>().Select(resource => Resources[resource]).Sum() / 95f };
 
-            return resourceEncoding.Concat(pieceEncoding);
+            return resourceEncoding.Concat(pieceEncoding).Append(VictoryPoints / 11f);
+        }
+
+        public void UpdateVictoryPoints(ICatan catan, int offset)
+        {
+            int points = 0;
+            points += (5 - Pieces[PieceType.Settlement]) * 1;
+            points += (4 - Pieces[PieceType.City]) * 2;
+            points += offset;
+
+            VictoryPoints = points;
         }
     }
 }
