@@ -29,9 +29,32 @@
             }
         }
 
+        public IEnumerable<EdgeCoordinate> Traverse(VertexCoordinate outgoing)
+        {
+            if (!Contains(outgoing))
+            {
+                throw new ArgumentException("The outgoing vertex does not belong to this edge.");
+            }
+
+            foreach (EdgeCoordinate edge in outgoing.Edges())
+            {
+                if (!Equals(edge))
+                {
+                    yield return edge;
+                }
+            }
+        }
+
+        public VertexCoordinate Other(VertexCoordinate current)
+        {
+            return !Contains(current)
+                ? throw new ArgumentException("The current vertex does not belong to this edge.")
+                : VertexA.Equals(current) ? VertexB : VertexA;
+        }
+
         public bool Contains(VertexCoordinate vertex)
         {
-            return vertex == VertexA || vertex == VertexB;
+            return vertex.Equals(VertexA) || vertex.Equals(VertexB);
         }
 
         public IEnumerable<VertexCoordinate> Vertices()
