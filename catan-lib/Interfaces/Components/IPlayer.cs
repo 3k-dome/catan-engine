@@ -6,8 +6,9 @@ namespace CatanLib.Interfaces.Components;
 public interface IPlayer : IResourceCollection, IPieceCollection, IVectorizableComponent
 {
     PlayerNumber Number { get; set; }
-
+    int LongestRoadLength { get; set; }
+    bool HasLongestRoad { get; set; }
     int VictoryPoints { get; }
 
-    void UpdateVictoryPoints(ICatan catan, int offset);
+    void UpdateVictoryPoints(ICatan catan);
 }
