@@ -31,25 +31,16 @@
 
         public IEnumerable<EdgeCoordinate> Traverse(VertexCoordinate outgoing)
         {
-            if (!Contains(outgoing))
-            {
-                throw new ArgumentException("The outgoing vertex does not belong to this edge.");
-            }
-
-            foreach (EdgeCoordinate edge in outgoing.Edges())
-            {
-                if (!Equals(edge))
-                {
-                    yield return edge;
-                }
-            }
+            return Contains(outgoing)
+                ? outgoing.Edges().Except(new[] { this })
+                : throw new ArgumentException("The outgoing vertex does not belong to this edge.");
         }
 
         public VertexCoordinate Other(VertexCoordinate current)
         {
-            return !Contains(current)
-                ? throw new ArgumentException("The current vertex does not belong to this edge.")
-                : VertexA.Equals(current) ? VertexB : VertexA;
+            return Contains(current)
+                ? VertexA.Equals(current) ? VertexB : VertexA
+                : throw new ArgumentException("The current vertex does not belong to this edge.");
         }
 
         public bool Contains(VertexCoordinate vertex)
