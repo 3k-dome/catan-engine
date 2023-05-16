@@ -14,7 +14,6 @@ namespace CatanLib.Parts
             set => vertex ??= value;
         }
 
-        public bool IsSettlement { get; private set; }
         public bool IsCity { get; private set; }
         public IPlayer? Belongs { get; private set; }
         public IEnumerable<ResourceType> ResourceCosts { get; } = new[]
@@ -41,7 +40,6 @@ namespace CatanLib.Parts
             catan.CurrentPlayer.UseResources(ResourceCosts);
             catan.CurrentPlayer.PlacePiece(RequiredPiece);
             Belongs = catan.CurrentPlayer;
-            (IsSettlement, IsCity) = (true, false);
         }
 
         public bool CanPlay(ICatan catan)
@@ -68,12 +66,12 @@ namespace CatanLib.Parts
             catan.CurrentPlayer.UseResources(UpgradeResourceCosts);
             catan.CurrentPlayer.TakePiece(RequiredPiece);
             catan.CurrentPlayer.PlacePiece(RequiredUpgradePiece);
-            (IsSettlement, IsCity) = (false, true);
+            IsCity = true;
         }
 
         public bool CanUpgrade(ICatan catan)
         {
-            bool isUpgradable = IsSettlement && !IsCity;
+            bool isUpgradable = !IsCity;
             bool isOwner = Belongs is not null && Belongs.Number == catan.CurrentPlayer.Number;
             bool hasResources = catan.CurrentPlayer.HasResources(UpgradeResourceCosts);
             bool hasPiece = catan.CurrentPlayer.HasPiece(RequiredUpgradePiece);
@@ -96,12 +94,7 @@ namespace CatanLib.Parts
         public IEnumerable<float> ToVector(ICatan catan)
         {
             IEnumerable<float> playerEndoding = PlayerEncoding.Encode(catan.CurrentPlayer, Belongs);
-
-            float[] stateEncoding = new float[2];
-            stateEncoding[0] = IsSettlement ? 1 : 0;
-            stateEncoding[1] = IsCity ? 1 : 0;
-
-            return playerEndoding.Concat(stateEncoding);
+            return playerEndoding.Append(IsCity ? 0f : 1f);
         }
     }
 }

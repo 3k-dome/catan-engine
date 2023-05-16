@@ -30,7 +30,7 @@ namespace CatanLib.Helpers
                 ResourceType resource = TerrainResources.Resources[tile.Terrain];
                 IEnumerable<ISettlement> settlements = GetPlacedSettlements(vertexStore, tile);
                 IEnumerable<ResourceType> tileProduction = settlements
-                    .SelectMany(settlement => settlement.IsSettlement ? new[] { resource } : new[] { resource, resource });
+                    .SelectMany(settlement => !settlement.IsCity ? new[] { resource } : new[] { resource, resource });
 
                 totalYield = totalYield.Concat(tileProduction);
             }
@@ -47,13 +47,13 @@ namespace CatanLib.Helpers
 
                 foreach (ISettlement settlement in settlements)
                 {
-                    if (settlement.IsSettlement)
+                    if (!settlement.IsCity)
                     {
                         GainResource(bank, settlement, resource);
                         continue;
                     }
 
-                    if (settlement.IsCity)
+                    else
                     {
                         GainResources(bank, settlement, new[] { resource, resource });
                         continue;
@@ -95,13 +95,13 @@ namespace CatanLib.Helpers
 
                 foreach (ISettlement settlement in settlements)
                 {
-                    if (settlement.IsSettlement)
+                    if (!settlement.IsCity)
                     {
                         TryGainResource(bank, settlement, resource);
                         continue;
                     }
 
-                    if (settlement.IsCity)
+                    else
                     {
                         TryGainResources(bank, settlement, new[] { resource, resource });
                         continue;
