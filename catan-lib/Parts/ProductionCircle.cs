@@ -8,24 +8,9 @@ namespace CatanLib.Parts
         public int Roll { get; init; }
         public float Odds { get; init; }
 
-        private float[]? encoding;
-        public float[] Encoding
-        {
-            get
-            {
-                if (encoding != null)
-                {
-                    return encoding;
-                }
-
-                encoding = new float[] { Roll / 12f, Odds / 36f };
-                return encoding;
-            }
-        }
-
         public IEnumerable<float> ToVector(ICatan catan)
         {
-            return Encoding;
+            yield return Odds / 36f;
         }
     }
 }
