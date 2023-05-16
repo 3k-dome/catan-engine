@@ -14,7 +14,6 @@ namespace CatanLib.Parts
             set => edge ??= value;
         }
 
-        public bool IsRoad { get; private set; }
         public IPlayer? Belongs { get; private set; }
         public IEnumerable<ResourceType> ResourceCosts { get; } = new[]
         {
@@ -29,7 +28,6 @@ namespace CatanLib.Parts
             catan.CurrentPlayer.UseResources(ResourceCosts);
             catan.CurrentPlayer.PlacePiece(RequiredPiece);
             Belongs = catan.CurrentPlayer;
-            IsRoad = true;
         }
 
         public bool CanPlay(ICatan catan)
@@ -74,12 +72,7 @@ namespace CatanLib.Parts
 
         public IEnumerable<float> ToVector(ICatan catan)
         {
-            IEnumerable<float> playerEndoding = PlayerEncoding.Encode(catan.CurrentPlayer, Belongs);
-
-            float[] stateEncoding = new float[1];
-            stateEncoding[0] = IsRoad ? 1 : 0;
-
-            return playerEndoding.Concat(stateEncoding);
+            return PlayerEncoding.Encode(catan.CurrentPlayer, Belongs);
         }
     }
 }
