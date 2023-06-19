@@ -16,11 +16,11 @@ public static class TileVertex
 
     public static readonly Dictionary<TileVertexDirection, VertexCoordinate> Offsets = new()
     {
-        { TileVertexDirection.North,     new(1, 0, 1) },
-        { TileVertexDirection.NorthEast, new(0, 0, 1) },
+        { TileVertexDirection.North,     new(1, 1, 0) },
+        { TileVertexDirection.NorthEast, new(0, 1, 0) },
         { TileVertexDirection.SouthEast, new(0, 1, 1) },
-        { TileVertexDirection.South,     new(0, 1, 0) },
-        { TileVertexDirection.SouthWest, new(1, 1, 0) },
+        { TileVertexDirection.South,     new(0, 0, 1) },
+        { TileVertexDirection.SouthWest, new(1, 0, 1) },
         { TileVertexDirection.NorthWest, new(1, 0, 0) },
     };
 

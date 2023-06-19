@@ -2,12 +2,12 @@
 
 public enum TileNeighborDirection
 {
-    West,
-    NorthWest,
     NorthEast,
     East,
     SouthEast,
     SouthWest,
+    West,
+    NorthWest,
 }
 
 public static class TileNeighbor
@@ -16,12 +16,12 @@ public static class TileNeighbor
 
     public static readonly Dictionary<TileNeighborDirection, TileCoordinate> Offsets = new()
     {
-        { TileNeighborDirection.West,      new(1, 0, -1) },
-        { TileNeighborDirection.NorthWest, new(1, -1, 0) },
-        { TileNeighborDirection.NorthEast, new(0, -1, 1) },
-        { TileNeighborDirection.East,      new(-1, 0, 1) },
-        { TileNeighborDirection.SouthEast, new(-1, 1, 0) },
-        { TileNeighborDirection.SouthWest, new(0, 1, -1) },
+        { TileNeighborDirection.NorthEast, new(0, 1, -1) },
+        { TileNeighborDirection.East,      new(-1, 1, 0) },
+        { TileNeighborDirection.SouthEast, new(-1, 0, 1) },
+        { TileNeighborDirection.SouthWest, new(0, -1, 1) },
+        { TileNeighborDirection.West,      new(1, -1, 0) },
+        { TileNeighborDirection.NorthWest, new(1, 0, -1) },
     };
 
     public static TileCoordinate GetOffset(TileNeighborDirection direction)

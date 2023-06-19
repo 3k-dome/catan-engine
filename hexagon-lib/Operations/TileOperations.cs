@@ -10,16 +10,16 @@ public static class TileOperations
         TileCoordinate corner = center.Add(offset);
         List<TileCoordinate> circle = new();
 
-        TileNeighborDirection[] circularizationOrder = TileNeighbor.Directions.ToArray();
-        circularizationOrder = ArrayOperations.Roll(circularizationOrder, (int)direction);
-        circularizationOrder = ArrayOperations.Roll(circularizationOrder, 2);
+        TileNeighborDirection[] offsetDirections = TileNeighbor.Directions.ToArray();
+        offsetDirections = ArrayOperations.Roll(offsetDirections, (int)direction);
+        offsetDirections = ArrayOperations.Roll(offsetDirections, 2);
 
-        foreach (TileNeighborDirection next in circularizationOrder)
+        foreach (TileNeighborDirection offsetDirection in offsetDirections)
         {
             for (int i = 0; i < radius; i++)
             {
                 circle.Add(corner);
-                corner = corner.Add(TileNeighbor.GetOffset(next));
+                corner = corner.Add(TileNeighbor.GetOffset(offsetDirection));
             }
         }
 
@@ -32,9 +32,13 @@ public static class TileOperations
 
         for (int i = radius; i > 0; i--)
         {
-            tileCoordinates = tileCoordinates.Concat(Circle(center, direction, i));
+            // circles are build clockwise but catans placement goes counter clockwise
+            IEnumerable<TileCoordinate> circle = Circle(center, direction, i);
+            circle = circle.Take(1).Concat(circle.Skip(1).Reverse());
+
+            tileCoordinates = tileCoordinates.Concat(circle);
         }
-        tileCoordinates = tileCoordinates.Concat(new[] { center });
+        tileCoordinates = tileCoordinates.Append(center);
 
         return tileCoordinates;
     }
