@@ -1,10 +1,9 @@
-﻿namespace CatanLib.Enums
+﻿namespace CatanLib.Enums;
+
+public enum PlayerNumber
 {
-    public enum PlayerNumber
-    {
-        PlayerOne,
-        PlayerTwo,
-        PlayerThree,
-        PlayerFour
-    }
+    One,
+    Two,
+    Three,
+    Four
 }
