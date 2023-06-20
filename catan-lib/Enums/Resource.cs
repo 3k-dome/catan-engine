@@ -22,8 +22,8 @@ public static class ResourceLookup
         { Terrain.Forest, Resource.Wood },
     };
 
-    public static Resource GetResource(Terrain terrain)
+    public static Resource GetResource(Terrain? terrain)
     {
-        return Lookup[terrain];
+        return terrain is null ? throw new ArgumentNullException(nameof(terrain)) : Lookup[(Terrain)terrain];
     }
 }
