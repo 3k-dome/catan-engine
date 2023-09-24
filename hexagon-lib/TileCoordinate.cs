@@ -60,40 +60,72 @@ public class TileCoordinate : HexagonalCoordinate
 
     public TileVertexDirection GetAlignment()
     {
-        IEnumerable<(char axis, int value)> coordinates = Enumerable.Empty<(char, int)>()
-            .Append(('x', X))
-            .Append(('y', Y))
-            .Append(('z', Z))
-            .ToArray();
-
-        // corner tiles, the corner of an edge at ther outermost side of any edge 
-        // of the hexagon belongs to the next edge see the frame pieces from catan
-        if (coordinates.Where(tuple => tuple.value == 0).Any())
+        if (Z == -3 && X != 0)
         {
-            if (Math.Abs(X) == Math.Abs(Y))
-            {
-                return X > Y ? TileVertexDirection.SouthEast : TileVertexDirection.NorthWest;
-            }
-
-            if (Math.Abs(X) == Math.Abs(Z))
-            {
-                return X > Z ? TileVertexDirection.NorthEast : TileVertexDirection.SouthWest;
-            }
-
-            if (Math.Abs(Y) == Math.Abs(Z))
-            {
-                return Y > Z ? TileVertexDirection.North : TileVertexDirection.South;
-            }
+            return TileVertexDirection.North;
         }
 
-        // any other tile between corners is a simple look up
-        (char axis, int value) = coordinates.MaxBy(tuple => Math.Abs(tuple.value));
-        return axis switch
+        if (Y == 3 && Z != 0)
         {
-            'x' => value > 0 ? TileVertexDirection.NorthEast : TileVertexDirection.SouthWest,
-            'y' => value > 0 ? TileVertexDirection.NorthWest : TileVertexDirection.SouthEast,
-            'z' => value > 0 ? TileVertexDirection.South : TileVertexDirection.North,
-            _ => throw new InvalidOperationException("Somehow this tile could not be matched.")
-        };
+            return TileVertexDirection.NorthEast;
+        }
+
+        if (X == -3 && Y != 0)
+        {
+            return TileVertexDirection.SouthEast;
+        }
+
+        if (Z == 3 && X != 0)
+        {
+            return TileVertexDirection.South;
+        }
+
+        if (Y == -3 && Z != 0)
+        {
+            return TileVertexDirection.SouthWest;
+        }
+
+        if (X == 3 && Y != 0)
+        {
+            return TileVertexDirection.NorthWest;
+        }
+
+        throw new NotImplementedException();
+
+        //IEnumerable<(char axis, int value)> coordinates = Enumerable.Empty<(char, int)>()
+        //    .Append(('x', X))
+        //    .Append(('y', Y))
+        //    .Append(('z', Z))
+        //    .ToArray();
+
+        //// corner tiles, the corner of an edge at the outermost side of any edge 
+        //// of the hexagon belongs to the next edge see the frame pieces from catan
+        //if (coordinates.Where(tuple => tuple.value == 0).Any())
+        //{
+        //    if (Math.Abs(X) == Math.Abs(Y))
+        //    {
+        //        return X > Y ? TileVertexDirection.SouthEast : TileVertexDirection.NorthWest;
+        //    }
+
+        //    if (Math.Abs(X) == Math.Abs(Z))
+        //    {
+        //        return X > Z ? TileVertexDirection.NorthEast : TileVertexDirection.SouthWest;
+        //    }
+
+        //    if (Math.Abs(Y) == Math.Abs(Z))
+        //    {
+        //        return Y > Z ? TileVertexDirection.North : TileVertexDirection.South;
+        //    }
+        //}
+
+        //// any other tile between corners is a simple look up
+        //(char axis, int value) = coordinates.MaxBy(tuple => Math.Abs(tuple.value));
+        //return axis switch
+        //{
+        //    'x' => value > 0 ? TileVertexDirection.NorthEast : TileVertexDirection.SouthWest,
+        //    'y' => value > 0 ? TileVertexDirection.NorthWest : TileVertexDirection.SouthEast,
+        //    'z' => value > 0 ? TileVertexDirection.South : TileVertexDirection.North,
+        //    _ => throw new InvalidOperationException("Somehow this tile could not be matched.")
+        //};
     }
 }

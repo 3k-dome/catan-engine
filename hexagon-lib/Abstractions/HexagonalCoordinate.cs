@@ -11,6 +11,8 @@ public abstract class HexagonalCoordinate : IHexagonalCoordinate
         (X, Y, Z) = (x, y, z);
     }
 
+    public string AsString() => $"({X}, {Y}, {Z})";
+
     public abstract HexagonalCoordinate Add((int X, int Y, int Z) coordinate);
     public abstract HexagonalCoordinate Add(IHexagonalCoordinate coordinate);
 

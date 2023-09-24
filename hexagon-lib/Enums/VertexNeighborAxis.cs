@@ -11,7 +11,7 @@ public static class VertexNeighbor
 {
     public static IEnumerable<VertexNeighborAxis> Axes => Enum.GetValues<VertexNeighborAxis>();
 
-    public static readonly Dictionary<VertexOrientation, Dictionary<VertexNeighborAxis, VertexCoordinate>> Offsets = new()
+    public static readonly Dictionary<VertexOrientation, Dictionary<VertexNeighborAxis, (int X, int Y, int Z)>> Offsets = new()
     {
         {
             VertexOrientation.CaretUp, new()
@@ -31,7 +31,7 @@ public static class VertexNeighbor
         },
     };
 
-    public static VertexCoordinate GetOffset(VertexOrientation orientation, VertexNeighborAxis axis)
+    public static (int X, int Y, int Z) GetOffset(VertexOrientation orientation, VertexNeighborAxis axis)
     {
         return Offsets[orientation][axis];
     }

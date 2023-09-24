@@ -13,7 +13,7 @@ public class VertexCoordinate : HexagonalCoordinate
 
         Orientation = sum switch
         {
-            0 => throw new ArgumentException("Tile coordniate was given."),
+            0 => throw new ArgumentException("Tile coordinate was given."),
             1 => VertexOrientation.CaretUp,
             2 => VertexOrientation.CaretDown,
             _ => throw new ArgumentException("Coordinate seems to be on a different plane."),
@@ -32,7 +32,7 @@ public class VertexCoordinate : HexagonalCoordinate
 
     public VertexCoordinate GetNeighbor(VertexNeighborAxis axis)
     {
-        VertexCoordinate offset = VertexNeighbor.GetOffset(Orientation, axis);
+        (int X, int Y, int Z) offset = VertexNeighbor.GetOffset(Orientation, axis);
         return Add(offset);
     }
 
@@ -56,5 +56,15 @@ public class VertexCoordinate : HexagonalCoordinate
         {
             yield return GetEdge(axis);
         }
+    }
+
+    public IEnumerable<TileCoordinate> GetTiles()
+    {
+        return Orientation switch
+        {
+            VertexOrientation.CaretUp => new TileCoordinate[] { new(X - 1, Y, Z), new(X, Y - 1, Z), new(X, Y, Z - 1) },
+            VertexOrientation.CaretDown => new TileCoordinate[] { new(X - 1, Y - 1, Z), new(X, Y - 1, Z - 1), new(X - 1, Y, Z - 1) },
+            _ => throw new NotImplementedException()
+        };
     }
 }
