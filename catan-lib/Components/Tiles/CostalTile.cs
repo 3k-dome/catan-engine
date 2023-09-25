@@ -1,6 +1,4 @@
-﻿using CatanLib.Encoders;
-using CatanLib.Enums;
-using CatanLib.Interfaces.Components.Other;
+﻿using CatanLib.Enums;
 using CatanLib.Interfaces.Components.Tiles;
 using HexagonLib;
 using HexagonLib.Enums;
@@ -27,12 +25,12 @@ public class CostalTile : ICostalTile
         {
             if (accessibleFrom.Count() != 2)
             {
-                throw new ArgumentException("Harbors may only be accessed from to directions!");
+                throw new ArgumentException("Harbors may only be accessed from two directions!");
             }
 
             if (accessibleFrom.Any() && resource is null && !any)
             {
-                throw new ArgumentException("A harbory must provide trades if it is accessibe!");
+                throw new ArgumentException("A harbor must provide trades if it is accessible!");
             }
         }
 
@@ -49,8 +47,9 @@ public class CostalTile : ICostalTile
         if (defaultAccessibleFrom is not null)
         {
             TileVertexDirection alignment = Coordinate.GetAlignment();
+
             AccessibleFrom = defaultAccessibleFrom.Select(direction => (int)direction + (int)alignment)
-                .Select(direction => direction % (TileVertex.Directions.Count() - 1))
+                .Select(direction => direction % TileVertex.Directions.Count())
                 .Cast<TileVertexDirection>()
                 .ToArray();
         }
@@ -58,17 +57,5 @@ public class CostalTile : ICostalTile
         {
             AccessibleFrom = null;
         }
-    }
-
-    public IEnumerable<float> ToVector(ICatan catan)
-    {
-        IEnumerable<float> encoding = ResourceEncoder.EncodeResource(TradesResource);
-        return encoding.Append(TradesAny ? 1f : 0f);
-    }
-
-    public IEnumerable<string> ToDescriptiveVector(ICatan catan)
-    {
-        IEnumerable<string> encoding = ResourceEncoder.EncodeResourceDescriptive();
-        return encoding.Append("Trades any 3:1");
     }
 }

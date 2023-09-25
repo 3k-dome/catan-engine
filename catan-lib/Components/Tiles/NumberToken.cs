@@ -1,5 +1,4 @@
-﻿using CatanLib.Interfaces.Components.Other;
-using CatanLib.Interfaces.Components.Tiles;
+﻿using CatanLib.Interfaces.Components.Tiles;
 
 namespace CatanLib.Components.Tiles;
 
@@ -11,17 +10,7 @@ public class NumberToken : INumberToken
 
     public NumberToken(char symbol, int roll, float odds)
     {
-        (Symbol, Roll, Odds) = (symbol, roll, odds);
-    }
-
-    public IEnumerable<float> ToVector(ICatan catan)
-    {
-        yield return Odds;
-    }
-
-    public IEnumerable<string> ToDescriptiveVector(ICatan catan)
-    {
-        yield return "Odds of Roll";
+        (Symbol, Roll, Odds) = (symbol, roll, odds / (6 / 36f));
     }
 
     public static IEnumerable<INumberToken> TokenSet { get; } = new List<INumberToken>()
@@ -45,5 +34,6 @@ public class NumberToken : INumberToken
         new NumberToken('R', 11, 2/36f),
         new NumberToken('H', 12, 1/36f),
     };
-    public static INumberToken DesertToken { get; } = new NumberToken(' ', 0, 6 / 36f);
+
+    public static INumberToken DesertToken { get; } = new NumberToken(' ', 0, 0f);
 }

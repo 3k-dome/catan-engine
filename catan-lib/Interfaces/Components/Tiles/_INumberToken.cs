@@ -1,8 +1,6 @@
-﻿using CatanLib.Interfaces.Interaction.Vectorization;
+﻿namespace CatanLib.Interfaces.Components.Tiles;
 
-namespace CatanLib.Interfaces.Components.Tiles;
-
-public interface INumberToken : IVectorizableComponent
+public interface INumberToken
 {
     char Symbol { get; }
     int Roll { get; }

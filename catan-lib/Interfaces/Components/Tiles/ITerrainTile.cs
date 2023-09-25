@@ -1,10 +1,12 @@
 ﻿using CatanLib.Enums;
-using CatanLib.Interfaces.Interaction.Vectorization;
 
 namespace CatanLib.Interfaces.Components.Tiles;
 
-public interface ITerrainTile : IHexagonalTile, IVectorizableComponent
+public interface ITerrainTile : IHexagonalTile
 {
     Terrain? TerrainType { get; }
     INumberToken NumberToken { get; }
+    bool HasRobber { get; }
+
+    public void ToggleRobber();
 }
