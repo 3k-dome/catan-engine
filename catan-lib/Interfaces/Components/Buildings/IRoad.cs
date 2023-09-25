@@ -1,10 +1,8 @@
-﻿using CatanLib.Interfaces.Interaction.Actions;
-using CatanLib.Interfaces.Interaction.Vectorization;
-using HexagonLib;
+﻿using HexagonLib;
 
 namespace CatanLib.Interfaces.Components.Buildings;
 
-public interface IRoad : IBuilding, IPrimaryAction, IVectorizableComponent
+public interface IRoad : IBuilding
 {
     EdgeCoordinate Edge { get; }
 }

@@ -8,4 +8,6 @@ public interface IBuilding
     IPlayer? Owner { get; }
     Piece Piece { get; }
     IEnumerable<Resource> Costs { get; }
+
+    public void SetOwner(IPlayer player);
 }

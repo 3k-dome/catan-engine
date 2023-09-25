@@ -1,10 +1,15 @@
-﻿using CatanLib.Interfaces.Interaction.Actions;
-using CatanLib.Interfaces.Interaction.Vectorization;
+﻿using CatanLib.Enums;
 using HexagonLib;
 
 namespace CatanLib.Interfaces.Components.Buildings;
 
-public interface ISettlement : IBuilding, IUpgradeable, IPrimaryAction, ISecondaryAction, IVectorizableComponent
+public interface ISettlement : IBuilding
 {
     VertexCoordinate Coordinate { get; }
+
+    bool IsCity { get; }
+    Piece CityPiece { get; }
+    IEnumerable<Resource> CityCosts { get; }
+
+    public void PlaceCity();
 }
